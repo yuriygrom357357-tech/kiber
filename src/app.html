@@ -1070,12 +1070,13 @@ function renderPrac(key){
   </div></section>`;
   if(docs.length){h+=`<section class="pr-sec"><h2>Документи і бланки</h2>`;
     docs.forEach(d=>{const meta=[d.p?`${d.p} с.`:"",d.kb>=1024?(d.kb/1024).toFixed(1).replace(".",",")+" МБ":d.kb+" КБ","PDF"+(d.w?" · Word":"")].filter(Boolean).join(" · ");
-      h+=`<div class="doc card"><span class="di">PDF</span><div class="dt"><b>${esc(d.t)}</b><small>${meta}</small></div><div class="da"><a class="pri" href="docs/${d.id}.pdf" target="_blank" rel="noopener">Відкрити</a><button data-print="${d.id}">Друкувати</button><button data-save="${d.id}" data-ext="pdf">Зберегти PDF</button>${d.w?`<button data-save="${d.id}" data-file="${d.w}" data-ext="${d.w.split(".").pop()}">Зберегти Word</button>`:""}</div></div>`});
+      h+=`<div class="doc card"><span class="di">PDF</span><div class="dt"><b>${esc(d.t)}</b><small>${meta}</small></div><div class="da"><a class="pri" href="${DOCP(d.id+".pdf")}" target="_blank" rel="noopener">Відкрити</a><button data-print="${d.id}">Друкувати</button><button data-save="${d.id}" data-ext="pdf">Зберегти PDF</button>${d.w?`<button data-save="${d.id}" data-file="${d.w}" data-ext="${d.w.split(".").pop()}">Зберегти Word</button>`:""}</div></div>`});
     h+=`</section>`}
   h+=`<div class="cta" style="margin-top:20px"><button class="btn fx" data-go="#">${icon("back")} До курсу</button><button class="btn fx" data-go="#docs">${icon("book")} Усі документи</button></div></div>`;
   $("#view").innerHTML=h;bindGo();bindDocBtns();
 }
 /* ---------- НОРМАТИВНІ ДОКУМЕНТИ ---------- */
+const DOCP=f=>(window.KB_DOCBASE||"")+"docs/"+f;
 function docName(it,ext){return it.t.replace(/[\\/:*?"<>|«»]+/g," ").replace(/\s+/g," ").trim().slice(0,110)+"."+ext}
 function renderDocs(){
   S={view:"docs"};hidePlayer();setHead("Нормативні документи","Програма, накази, стандарти, бланки");
@@ -1087,7 +1088,7 @@ function renderDocs(){
     h+=`<section class="dsec" id="ds${i}"><h2>${esc(x.s)} <span class="n">${x.items.length}</span></h2>${x.d?`<p>${esc(x.d)}</p>`:""}`;
     x.items.forEach(it=>{const meta=[it.p?`${it.p} с.`:"",it.kb>=1024?(it.kb/1024).toFixed(1).replace(".",",")+" МБ":it.kb+" КБ","PDF"+(it.w?" · Word":"")].filter(Boolean).join(" · ");
       h+=`<div class="doc card" data-q="${esc((x.s+" "+it.t+" "+it.d).toLowerCase())}"><span class="di">PDF</span><div class="dt"><b>${esc(it.t)}</b>${it.d?`<span>${esc(it.d)}</span>`:""}<small>${meta}</small></div>
-      <div class="da"><a class="pri" href="docs/${it.id}.pdf" target="_blank" rel="noopener">Відкрити</a><button data-print="${it.id}">Друкувати</button><button data-save="${it.id}" data-ext="pdf">Зберегти PDF</button>${it.w?`<button data-save="${it.id}" data-file="${it.w}" data-ext="${it.w.split(".").pop()}">Зберегти Word</button>`:""}</div></div>`});
+      <div class="da"><a class="pri" href="${DOCP(it.id+".pdf")}" target="_blank" rel="noopener">Відкрити</a><button data-print="${it.id}">Друкувати</button><button data-save="${it.id}" data-ext="pdf">Зберегти PDF</button>${it.w?`<button data-save="${it.id}" data-file="${it.w}" data-ext="${it.w.split(".").pop()}">Зберегти Word</button>`:""}</div></div>`});
     h+=`</section>`;
   });
   h+=`<p style="color:var(--dim);font-size:13.5px;margin-top:22px">Стандарти СТІ і довідкові матеріали мають обмеження розповсюдження: використовуються в межах Сил оборони, копії — з дозволу розробника.</p></div>`;
@@ -1098,12 +1099,12 @@ function renderDocs(){
 }
 function bindDocBtns(){
   const find=id=>(DATA.docs||[]).flatMap(x=>x.items).find(i=>i.id===id);
-  document.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>printPdf("docs/"+b.dataset.print+".pdf"));
+  document.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>printPdf(DOCP(b.dataset.print+".pdf")));
   document.querySelectorAll("[data-save]").forEach(b=>b.onclick=()=>{const it=find(b.dataset.save),ext=b.dataset.ext,file=b.dataset.file||it.id+".pdf";
     busy(b,"Зберігаю…",async()=>{const name=docName(it,ext);
-      try{const r=await fetch("docs/"+file);if(!r.ok)throw 0;const blob=await r.blob();
+      try{const r=await fetch(DOCP(file));if(!r.ok)throw 0;const blob=await r.blob();
         return saveFile(blob,name,ext==="pdf"?"Документ PDF":"Документ Word",ext==="pdf"?"application/pdf":(ext==="doc"?"application/msword":"application/vnd.openxmlformats-officedocument.wordprocessingml.document"),ext)}
-      catch(e){const a=document.createElement("a");a.href="docs/"+file;a.download=name;document.body.appendChild(a);a.click();a.remove();return "saved"}})});
+      catch(e){const a=document.createElement("a");a.href=DOCP(file);a.download=name;document.body.appendChild(a);a.click();a.remove();return "saved"}})});
 }
 function printPdf(url){
   let f=document.getElementById("pdfPrint");if(f)f.remove();
