@@ -449,7 +449,7 @@ function renderHome(){
       <div class="stat card"><b>${pts}</b><span>балів з ${maxPts}</span></div>
       <div class="stat card"><b>${ex?ex.pct+"%":"—"}</b><span>підсумковий тест</span></div>
     </div>
-    <div class="note"><b>Пілотна версія.</b> Відкрито ${T.length} заняття з ${TOTAL} теоретичного блоку — решта з’являтиметься поступово. Тексти зведені з Програми курсу, довідкового матеріалу до стандарту, планів-конспектів і презентацій.</div>
+    ${T.length<TOTAL?`<div class="note"><b>Пілотна версія.</b> Відкрито ${T.length} заняття з ${TOTAL} теоретичного блоку — решта з’являтиметься поступово.</div>`:""}
   </section>`;
   DATA.course.forEach(B=>{
     html+=`<div class="blockh">${esc(B.block)}<small>Програма ТП 7-418.78 «Курс інструктора базового рівня»</small></div>`;
