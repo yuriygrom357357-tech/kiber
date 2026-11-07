@@ -54,5 +54,20 @@ async def main():
         timing[sec["f"]] = {"d": round(dur("audio/" + sec["f"]), 1), "m": marks, "k": key}
         print("ok", sec["f"], timing[sec["f"]]["d"])
     json.dump(timing, open("tts/timing.json", "w"), ensure_ascii=False)
+    # короткі кліпи для тестів (питання, варіанти, пояснення)
+    clips = job.get("clips", [])
+    os.makedirs("audio/q", exist_ok=True)
+    sem = asyncio.Semaphore(5)
+    todo = [c for c in clips if not os.path.exists("audio/" + c["f"])]
+    print("clips total", len(clips), "to make", len(todo))
+    async def one(c):
+        async with sem:
+            tmp = "tts/cache/clip_%s.mp3" % c["f"].replace("/", "_")
+            await synth(c["text"], tmp)
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", tmp, "-ac", "1", "-ar", "24000", "-b:a", "48k", "audio/" + c["f"]], check=True)
+    await asyncio.gather(*[one(c) for c in todo])
+    keep = set(c["f"] for c in clips)
+    for fn in os.listdir("audio/q"):
+        if "q/" + fn not in keep: os.remove("audio/q/" + fn)
 
 asyncio.run(main())

@@ -245,6 +245,7 @@ h1,h2,h3{font-family:var(--f-head)}
 .verdict.no{border-color:var(--bad);background:var(--badbg)}
 .verdict b{display:block;margin-bottom:2px}
 .qnext{margin-top:18px;display:flex;justify-content:flex-end}
+.qvoice{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
 .res{text-align:center;padding:30px 0 10px}
 .ring{width:150px;height:150px;margin:6px auto 12px;position:relative}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
@@ -406,7 +407,7 @@ window.addEventListener("hashchange",route);
 $("#homeBtn").onclick=()=>go("#");
 function route(){
   const h=location.hash.replace(/^#\/?/,"");const [a,b]=h.split("/");
-  Q=null;stopReward();
+  Q=null;stopReward();qStop();
   if(a==="exam"){stopAudio(true);renderExamStart();}
   else if(a==="sheet"){stopAudio(true);renderSheet(b);}
   else if(a==="goal"){stopAudio(true);renderGoal();}
@@ -586,14 +587,14 @@ function mediaMeta(){if(!("mediaSession" in navigator)||!A.t)return;try{
 let Q=null;
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function startQuiz(cfg){
-  Q={...cfg,items:shuffle(cfg.items).map(it=>{const [q,opts,ex]=it.q;return {...it,text:q,ex,opts:shuffle(opts.map((o,k)=>({o,ok:k===0})))}}),i:0,score:0,picked:null,wrong:[]};
+  Q={...cfg,items:shuffle(cfg.items).map(it=>{const [q,opts,ex,clip]=it.q;return {...it,text:q,ex,clip,opts:shuffle(opts.map((o,k)=>({o,ok:k===0,k})))}}),i:0,score:0,picked:null,wrong:[]};
   renderQ();
 }
-function renderQ(){
+function renderQ(noVoice){
   const box=$("#quiz");const it=Q.items[Q.i];const n=Q.items.length;const L="АБВГ";
   let h=`<div class="qhead"><span>Питання ${Q.i+1} з ${n}</span><span>${Q.score} ${balWord(Q.score)}</span></div><div class="qprog"><i style="width:${Q.i/n*100}%"></i></div>`;
   if(Q.exam)h+=`<div class="eyebrow" style="margin-bottom:6px">${esc(byId[it.tid].short)}</div>`;
-  h+=`<div class="qtext">${esc(it.text)}</div><div class="opts">`;
+  h+=voiceBar()+`<div class="qtext">${esc(it.text)}</div><div class="opts">`;
   it.opts.forEach((o,k)=>{let c="";if(Q.picked!==null){if(Q.exam)c=k===Q.picked?"sel":"dim";else if(o.ok)c="right";else if(k===Q.picked)c="wrong";else c="dim"}
     h+=`<button class="opt ${c}" data-k="${k}" ${Q.picked!==null?"disabled":""}><span class="k">${L[k]}</span><span>${esc(o.o)}</span></button>`});
   h+=`</div>`;
@@ -605,14 +606,30 @@ function renderQ(){
   box.innerHTML=h;
   box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.k));
   const nx=$("#qNext");if(nx){nx.onclick=nextQ;nx.focus({preventScroll:true})}
+  bindVoice();
+  if(!noVoice&&qvOn()){if(Q.picked===null)qReadQuestion();else if(!Q.exam)qReadVerdict();}
 }
+/* ---------- озвучка тестів ---------- */
+const qa=new Audio();qa.preload="auto";let QSEQ=[],QSEQi=0,QSEQid=0;
+function qvOn(){return store.get("qvoice",true)&&!!DATA.qa}
+function qStop(){QSEQ=[];QSEQid++;try{qa.pause()}catch(e){}}
+function qPlay(list){qStop();if(!list.length)return;const my=++QSEQid;QSEQ=list.filter(Boolean);QSEQi=0;
+  const next=()=>{if(my!==QSEQid||QSEQi>=QSEQ.length)return;qa.src="audio/"+QSEQ[QSEQi++];qa.playbackRate=store.get("rate",1);qa.play().catch(()=>{})};
+  qa.onended=()=>{if(my===QSEQid)setTimeout(next,180)};next();}
+function qReadQuestion(){const it=Q&&Q.items[Q.i];if(!it||!it.clip)return;const L=DATA.qa.letters;
+  const seq=[it.clip.q];it.opts.forEach((o,j)=>{seq.push(L[j],it.clip.o[o.k])});qPlay(seq);}
+function qReadVerdict(){const it=Q&&Q.items[Q.i];if(!it||!it.clip||Q.picked===null)return;const ok=it.opts[Q.picked].ok;
+  const right=it.opts.find(o=>o.ok);qPlay(ok?[DATA.qa.right,it.clip.e]:[DATA.qa.wrong,it.clip.o[right.k],it.clip.e]);}
+function voiceBar(){if(!DATA.qa)return"";const on=qvOn();return `<div class="qvoice"><button class="btn fx sm" id="qvToggle" aria-pressed="${on}">${on?"🔊 Озвучка увімкнена":"🔇 Озвучка вимкнена"}</button>${Q.items[Q.i]&&Q.items[Q.i].clip?`<button class="btn fx sm" id="qvReplay">▶ Прослухати ще раз</button>`:""}</div>`}
+function bindVoice(){const t=$("#qvToggle");if(t)t.onclick=()=>{store.set("qvoice",!qvOn());if(!qvOn())qStop();renderQ(true)};
+  const r=$("#qvReplay");if(r)r.onclick=()=>Q.picked===null||Q.exam?qReadQuestion():qReadVerdict();}
 function balWord(n){const a=n%10,b=n%100;if(a===1&&b!==11)return"бал";if(a>=2&&a<=4&&(b<12||b>14))return"бали";return"балів"}
-function pick(k){if(Q.picked!==null)return;Q.picked=k;const it=Q.items[Q.i];if(it.opts[k].ok)Q.score++;else Q.wrong.push(it);renderQ();
+function pick(k){if(Q.picked!==null)return;qStop();Q.picked=k;const it=Q.items[Q.i];if(it.opts[k].ok)Q.score++;else Q.wrong.push(it);renderQ();
   if(Q.exam){setTimeout(()=>{if(Q&&Q.picked===k&&Q.items[Q.i]===it)nextQ()},650)}}
-function nextQ(){Q.picked=null;Q.i++;if(Q.i>=Q.items.length)renderResult();else{renderQ();const qt=document.querySelector(".quiz");if(qt&&qt.getBoundingClientRect().top<0)qt.scrollIntoView()}}
+function nextQ(){qStop();Q.picked=null;Q.i++;if(Q.i>=Q.items.length)renderResult();else{renderQ();const qt=document.querySelector(".quiz");if(qt&&qt.getBoundingClientRect().top<0)qt.scrollIntoView()}}
 function gradeOf(p){return p>=90?"Відмінно":p>=80?"Добре":p>=70?"Задовільно":"Незадовільно"}
 function renderResult(){
-  const n=Q.items.length,s=Q.score,p=Math.round(s/n*100);
+  qStop();const n=Q.items.length,s=Q.score,p=Math.round(s/n*100);
   if(Q.save){const b=best(Q.save);if(!b||s/n>b.s/b.n)store.set("best_"+Q.save,{s,n,pct:p});}
   if(Q.exam){const prev=store.get("exam",null);if(!prev||p>prev.pct)store.set("exam",{pct:p,s,n})}
   const C=2*Math.PI*74,col=p>=PASS?"var(--acc)":p>=70?"var(--amb)":"var(--bad)";

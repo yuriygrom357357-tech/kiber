@@ -287,3 +287,25 @@ COURSE = [
     ["Б1 М2 Т6 З1", "Види контролю знань і навичок", None],
     ["Б1 М2 Т6 З2", "Оформлення документації з обліку підготовки", None]]}]}
 ]
+
+# ---- інші заняття і порядок за програмою ----
+try:
+    from lessons2 import L2
+except ImportError:
+    L2 = []
+try:
+    from lessons3 import L3
+except ImportError:
+    L3 = []
+try:
+    from lessons4 import L4
+except ImportError:
+    L4 = []
+L.extend(L2 + L3 + L4)
+_tr = str.maketrans({"Б": "b", "М": "m", "Т": "t", "З": "z", " ": ""})
+for B in COURSE:
+    for m in B["mods"]:
+        for it in m["items"]:
+            it[2] = it[0].translate(_tr)
+_order = [it[2] for B in COURSE for m in B["mods"] for it in m["items"]]
+L.sort(key=lambda t: _order.index(t["id"]) if t["id"] in _order else 999)

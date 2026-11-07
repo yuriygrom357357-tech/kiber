@@ -37,12 +37,30 @@ def blocks_of(sec, si):
             out.append(["s%db%d" % (si, bi), pre + say(v)])
     return out
 
+import hashlib
+LETTERS = ["А", "Б", "В", "Г"]
+def cid(text):
+    return "q/" + hashlib.md5(("v1|" + text).encode()).hexdigest()[:12] + ".mp3"
+def quiz_clips():
+    """тексти кліпів для тестів; повертає (список кліпів, мапу на кожне питання)"""
+    clips = {}
+    def add(text):
+        f = cid(text); clips[f] = text; return f
+    for l in LETTERS: add(l + ".")
+    add("Правильно."); add("Неправильно. Правильна відповідь:")
+    qmap = {}
+    for t in L:
+        for i, (q, opts, ex) in enumerate(t["test"]):
+            qmap[(t["id"], i)] = {"q": add(say(q)), "o": [add(say(o)) for o in opts], "e": add(say(ex))}
+    return [{"f": f, "text": x} for f, x in clips.items()], qmap
+
 def job():
     secs = []
     for t in L:
         for si, sec in enumerate(t["sections"]):
             secs.append({"f": "%s_%02d.mp3" % (t["id"], si), "blocks": blocks_of(sec, si)})
-    json.dump({"voice": "uk-UA-OstapNeural", "rate": "+0%", "sections": secs}, open(os.path.join(ROOT, "tts", "job.json"), "w"), ensure_ascii=False, indent=1)
+    clips, _ = quiz_clips()
+    json.dump({"voice": "uk-UA-OstapNeural", "rate": "+0%", "sections": secs, "clips": clips}, open(os.path.join(ROOT, "tts", "job.json"), "w"), ensure_ascii=False, indent=1)
     print("sections", len(secs), "chars", sum(len(b[1]) for s in secs for b in s["blocks"]))
 
 SITE = "https://yuriygrom357357-tech.github.io/kiber/"
@@ -89,12 +107,24 @@ def build_html():
             x = tm.get(f)
             arr.append({"f": f, "d": x["d"], "m": x["m"]} if x else {"f": f, "d": 0, "m": []})
         TIMING[t["id"]] = arr
-    data = {"topics": L, "course": COURSE, "sheets": SHEETS}
+    clips, qmap = quiz_clips()
+    have = lambda f: os.path.exists(os.path.join(ROOT, "audio", f))
+    topics = []
+    for t in L:
+        t2 = dict(t); t2["test"] = []
+        for i, item in enumerate(t["test"]):
+            m = qmap[(t["id"], i)]
+            ok = have(m["q"]) and all(have(x) for x in m["o"]) and have(m["e"])
+            t2["test"].append(list(item) + ([m] if ok else []))
+        topics.append(t2)
+    QA = {"letters": [cid(l + ".") for l in LETTERS], "right": cid("Правильно."), "wrong": cid("Неправильно. Правильна відповідь:")}
+    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None}
     tpl = open(os.path.join(ROOT, "src", "app.html")).read()
     files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
     audio = []
     for t in L:
         for x in TIMING[t["id"]]: audio.append("audio/" + x["f"])
+    audio += ["audio/" + c["f"] for c in clips if have(c["f"])]
     out = tpl.replace("/*DATA*/null", json.dumps(data, ensure_ascii=False)).replace("/*TIMING*/null", json.dumps(TIMING, ensure_ascii=False))
     ver = "kb-" + str(abs(hash(out)) % 10**6)
     sizes = lambda lst: [[p, os.path.getsize(os.path.join(ROOT, p)) if os.path.exists(os.path.join(ROOT, p)) else 0] for p in lst]
