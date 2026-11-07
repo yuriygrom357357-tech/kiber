@@ -112,6 +112,27 @@ def icons():
       "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}
     json.dump(man, open(os.path.join(ROOT, "manifest.webmanifest"), "w"), ensure_ascii=False, indent=1)
 
+def docs_data():
+    from docs_catalog import DOCS
+    try:
+        import pymupdf
+    except Exception:
+        pymupdf = None
+    out = []
+    for sec in DOCS:
+        items = []
+        for k, t, d in sec["items"]:
+            pdf = os.path.join(ROOT, "docs", k + ".pdf")
+            if not os.path.exists(pdf): continue
+            pages = 0
+            if pymupdf:
+                try: pages = pymupdf.open(pdf).page_count
+                except Exception: pass
+            word = next((k + e for e in (".docx", ".doc") if os.path.exists(os.path.join(ROOT, "docs", k + e))), None)
+            items.append({"id": k, "t": t, "d": d, "kb": round(os.path.getsize(pdf) / 1024), "p": pages, "w": word})
+        out.append({"s": sec["s"], "d": sec["d"], "items": items})
+    return out
+
 def build_html():
     icons()
     tm = json.load(open(os.path.join(ROOT, "tts", "timing.json")))
@@ -134,7 +155,7 @@ def build_html():
             t2["test"].append(list(item) + ([m] if ok else []))
         topics.append(t2)
     QA = {"letters": [cid(l + ".") for l in LETTERS], "right": cid("Правильно."), "wrong": cid("Неправильно. Правильна відповідь:")}
-    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None}
+    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None, "docs": docs_data()}
     tpl = open(os.path.join(ROOT, "src", "app.html")).read()
     files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "vendor/html2pdf.bundle.min.js", "vendor/docx.min.js", "icons/emblem.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
     audio = []

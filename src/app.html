@@ -393,6 +393,31 @@ h1,h2,h3{font-family:var(--f-head)}
  body>*:not(#printArea){display:none!important}
  #printArea{display:block}
 }
+
+/* нормативні документи */
+.hdoc{display:flex;align-items:center;gap:8px;height:42px;padding:0 12px;border-radius:12px;border:1px solid var(--line);color:var(--ink);font-family:var(--f-head);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:14px;flex:none}
+.hdoc svg{width:20px;height:20px;color:var(--acc)}
+.hdoc:hover{border-color:var(--acc)}
+@media (max-width:560px){.hdoc span{display:none}.hdoc{padding:0 10px}}
+.dsearch{width:100%;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--paper);padding:0 14px;margin:14px 0 4px;font-size:16px}
+.dtoc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.dtoc a{font-size:13.5px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);color:var(--muted);text-decoration:none}
+.dtoc a:hover{border-color:var(--acc);color:var(--ink)}
+.dsec{margin-top:26px;scroll-margin-top:76px}
+.dsec>h2{font-family:var(--f-head);text-transform:uppercase;letter-spacing:.03em;font-size:20px;display:flex;align-items:center;gap:10px}
+.dsec>h2 .n{font-family:var(--f-mono);font-size:12px;color:var(--dim);font-weight:400}
+.dsec>p{color:var(--muted);font-size:14.5px;margin:2px 0 10px}
+.doc{display:flex;gap:14px;align-items:center;padding:12px 14px;margin-bottom:8px}
+.doc .di{width:40px;height:48px;flex:none;border-radius:6px;background:var(--soft);border:1px solid var(--line2);display:grid;place-items:center;font-family:var(--f-mono);font-size:10px;color:var(--acc);font-weight:700}
+.doc .dt{flex:1;min-width:0}
+.doc .dt b{display:block;line-height:1.3}
+.doc .dt span{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}
+.doc .dt small{display:block;font-family:var(--f-mono);font-size:11.5px;color:var(--dim);margin-top:3px;letter-spacing:.04em}
+.doc .da{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.doc .da a,.doc .da button{height:36px;padding:0 11px;border-radius:9px;border:1px solid var(--line);background:var(--paper);font-weight:600;font-size:13.5px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap}
+.doc .da a:hover,.doc .da button:hover{border-color:var(--acc)}
+.doc .da .pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+@media (max-width:720px){.doc{flex-wrap:wrap}.doc .da{width:100%;justify-content:flex-start}.doc .di{display:none}}
 /* emblem + 3D word */
 .emb{--s:104px;width:var(--s);height:var(--s);border-radius:50%;background:linear-gradient(#2F7FE0 50%,#FFD500 50%);display:grid;place-items:center;flex:none}
 .emb>i{width:calc(var(--s)*.885);height:calc(var(--s)*.885);border-radius:50%;background:var(--bg);display:grid;place-items:center}
@@ -430,6 +455,7 @@ h1,h2,h3{font-family:var(--f-head)}
     <span class="mark" id="hMark"></span>
     <span style="min-width:0"><b id="hTitle">КІБЕР</b><small id="hSub">158 навчальний центр</small></span>
   </button>
+  <button class="hdoc fx" id="docsBtn" aria-label="Нормативні документи" title="Нормативні документи"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5"/><path d="M8 7h8M8 11h6"/></svg><span>Документи</span></button>
   <button class="ib" id="qrBtn" aria-label="QR-код курсу" title="QR-код"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button>
   <button class="ib dl" id="dlBtn" aria-label="Завантажити для роботи офлайн" title="Офлайн"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><i class="dot"></i></button>
 </div></header>
@@ -479,6 +505,7 @@ function route(){
   else if(a==="sheet"){stopAudio(true);renderSheet(b);}
   else if(a==="goal"){stopAudio(true);renderGoal();}
   else if(a==="aar"){stopAudio(true);renderAAR();}
+  else if(a==="docs"){stopAudio(true);renderDocs();}
   else if(a&&byId[a]){openTopic(a,b==="test"?"test":"lec");}
   else{stopAudio(true);renderHome();}
   window.scrollTo(0,0);
@@ -506,7 +533,7 @@ function setHead(t,s){$("#hTitle").textContent=t;$("#hSub").textContent=s}
 function hidePlayer(){$("#player").classList.add("hidden")}
 
 /* ---------- icons ---------- */
-function icon(n){return {play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+function icon(n){return {book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5"/><path d="M8 7h8M8 11h6"/></svg>',play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
   test:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>',
   sheet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
@@ -528,7 +555,7 @@ function renderHome(){
     <div class="lead">Курс інструктора базового рівня</div>
     <p>Слухайте лекцію — текст іде паралельно. Закріплюйте тестом: заняття засвоєне від ${PASS}%. Для практики — оціночний лист і тренажери.</p>
     <div class="cta">${last&&byId[last]?`<button class="btn fx p" data-go="#${last}">${icon("play")} Продовжити: ${esc(byId[last].short)}</button>`:`<button class="btn fx p" data-go="#${T[0].id}">${icon("play")} Почати з першого заняття</button>`}
-      <button class="btn fx" data-go="#sheet">${icon("sheet")} Оціночний лист</button></div>
+      <button class="btn fx" data-go="#sheet">${icon("sheet")} Оціночний лист</button><button class="btn fx" data-go="#docs">${icon("book")} Нормативні документи</button></div>
     <div id="offCard"></div>
     <div class="stats">
       <div class="stat card"><b>${passed}/${T.length}</b><span>занять засвоєно</span></div>
@@ -554,6 +581,7 @@ function renderHome(){
     });
   });
   html+=`<div class="blockh">Практика<small>Блоки 2–5: проведення занять, оцінювання, іспит</small></div><div class="list" style="margin-top:12px">
+    <button class="row fx tool" data-go="#docs"><span class="num">${icon("book")}</span><span class="t"><b>Нормативні документи</b><span>Програма курсу, доктрина, накази, стандарти СТІ, бланки, теми пробних занять. Відкрити, роздрукувати або зберегти на комп’ютер.</span></span><span class="go">›</span></button>
     <button class="row fx tool" data-go="#sheet"><span class="num">${icon("sheet")}</span><span class="t"><b>Оціночний лист</b><span>Самооцінка пробного заняття: лекційне, практичне (без зброї / зі зброєю), польове. Бали 3–2–1–0 і підсумок рахуються самі.</span></span><span class="go">›</span></button>
     <button class="row fx tool" data-go="#goal"><span class="num">${icon("goal")}</span><span class="t"><b>Тренажер «Опис цілі»</b><span>Складіть ціль, вимоги, умови й критерії — додаток перевірить формулювання.</span></span><span class="go">›</span></button>
     <button class="row fx tool" data-go="#aar"><span class="num">${icon("aar")}</span><span class="t"><b>Тренажер АПД</b><span>Сценарій оборони позиції: проведіть аналіз за чотирма запитаннями і порівняйте з еталоном.</span></span><span class="go">›</span></button>
@@ -995,6 +1023,39 @@ function paintSum(type,st){
   fin.innerHTML=`<h2>Підсумок і розбір</h2><p>${why}</p>${weak.length?`<p><b>Над чим працювати</b> — пункти з оцінкою 0 і 1, з них почніть розбір (АПД):</p><ul>${weak.map(([n,t,v,st])=>`<li><b>${v}</b> — ${n}. ${esc(t)}${st?' <span style="color:var(--amb)">★</span>':""}</li>`).join("")}</ul>`:(r.rated?"<p>Пунктів з оцінкою 0 або 1 немає.</p>":"")}<p style="color:var(--muted);font-size:14px">У відомість записують бал і словесну оцінку, наприклад: «2,61 (виконано)».</p>`;
 }
 
+/* ---------- НОРМАТИВНІ ДОКУМЕНТИ ---------- */
+function docName(it,ext){return it.t.replace(/[\\/:*?"<>|«»]+/g," ").replace(/\s+/g," ").trim().slice(0,110)+"."+ext}
+function renderDocs(){
+  S={view:"docs"};hidePlayer();setHead("Нормативні документи","Програма, накази, стандарти, бланки");
+  const D=DATA.docs||[];const total=D.reduce((a,x)=>a+x.items.length,0);
+  let h=`<div class="wrap"><div class="thead"><span class="eyebrow">Бібліотека інструктора // ${total} документів</span><h1>Нормативні документи</h1><p>Усе, на що спирається курс: програма, доктрина й накази, стандарти підготовки, обов’язки, методичні посібники та бланки. Кожен документ можна відкрити, роздрукувати або зберегти на комп’ютер. Бланки є і у Word — їх можна заповнити на комп’ютері.</p></div>
+  <input class="dsearch" id="dQ" type="search" placeholder="Пошук: наказ, СТІ, план-конспект, відомість…" aria-label="Пошук документа">
+  <div class="dtoc">${D.map((x,i)=>`<a href="#docs" data-sec="ds${i}">${esc(x.s)}</a>`).join("")}</div>`;
+  D.forEach((x,i)=>{
+    h+=`<section class="dsec" id="ds${i}"><h2>${esc(x.s)} <span class="n">${x.items.length}</span></h2>${x.d?`<p>${esc(x.d)}</p>`:""}`;
+    x.items.forEach(it=>{const meta=[it.p?`${it.p} с.`:"",it.kb>=1024?(it.kb/1024).toFixed(1).replace(".",",")+" МБ":it.kb+" КБ","PDF"+(it.w?" · Word":"")].filter(Boolean).join(" · ");
+      h+=`<div class="doc card" data-q="${esc((x.s+" "+it.t+" "+it.d).toLowerCase())}"><span class="di">PDF</span><div class="dt"><b>${esc(it.t)}</b>${it.d?`<span>${esc(it.d)}</span>`:""}<small>${meta}</small></div>
+      <div class="da"><a class="pri" href="docs/${it.id}.pdf" target="_blank" rel="noopener">Відкрити</a><button data-print="${it.id}">Друкувати</button><button data-save="${it.id}" data-ext="pdf">Зберегти PDF</button>${it.w?`<button data-save="${it.id}" data-file="${it.w}" data-ext="${it.w.split(".").pop()}">Зберегти Word</button>`:""}</div></div>`});
+    h+=`</section>`;
+  });
+  h+=`<p style="color:var(--dim);font-size:13.5px;margin-top:22px">Стандарти СТІ і довідкові матеріали мають обмеження розповсюдження: використовуються в межах Сил оборони, копії — з дозволу розробника.</p></div>`;
+  $("#view").innerHTML=h;bindGo();
+  const find=it=>D.flatMap(x=>x.items).find(i=>i.id===it);
+  document.querySelectorAll(".dtoc a").forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById(a.dataset.sec).scrollIntoView({behavior:"smooth"})});
+  $("#dQ").oninput=e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll(".doc").forEach(d=>d.style.display=!q||d.dataset.q.includes(q)?"":"none");document.querySelectorAll(".dsec").forEach(sc=>sc.style.display=[...sc.querySelectorAll(".doc")].some(d=>d.style.display!=="none")?"":"none")};
+  document.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>printPdf("docs/"+b.dataset.print+".pdf"));
+  document.querySelectorAll("[data-save]").forEach(b=>b.onclick=()=>{const it=find(b.dataset.save),ext=b.dataset.ext,file=b.dataset.file||it.id+".pdf";
+    busy(b,"Зберігаю…",async()=>{const name=docName(it,ext);
+      try{const r=await fetch("docs/"+file);if(!r.ok)throw 0;const blob=await r.blob();
+        return saveFile(blob,name,ext==="pdf"?"Документ PDF":"Документ Word",ext==="pdf"?"application/pdf":(ext==="doc"?"application/msword":"application/vnd.openxmlformats-officedocument.wordprocessingml.document"),ext)}
+      catch(e){const a=document.createElement("a");a.href="docs/"+file;a.download=name;document.body.appendChild(a);a.click();a.remove();return "saved"}})});
+}
+function printPdf(url){
+  let f=document.getElementById("pdfPrint");if(f)f.remove();
+  f=document.createElement("iframe");f.id="pdfPrint";f.style.cssText="position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0";f.src=url;
+  f.onload=()=>{try{setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print()},350)}catch(e){window.open(url,"_blank")}};
+  document.body.appendChild(f);
+}
 /* ---------- ТРЕНАЖЕР «ОПИС ЦІЛІ» ---------- */
 const GOAL_EX={
  know:{c:"Ознайомити військовослужбовців з порядком опису цілі навчання.",r:"В кінці заняття кожен курсант повинен назвати чотири складові опису цілі та дати визначення кожної.",u:"Письмово, індивідуально, в аудиторії, в кінці заняття, протягом 5 хвилин, використовуючи бланк і ручку, не використовуючи конспект. Тест із 5 питань.",k:"5 правильних відповідей — «відмінно», 4 — «добре», 3 — «задовільно», 2 і менше — «незадовільно»."},
@@ -1173,6 +1234,7 @@ function openInstall(auto) {
   modal(`<h2>Встановити як застосунок</h2><p>Додайте іконку, щоб відкривати курс одним дотиком.</p>${steps}<div class="mrow"><button class="btn fx p" onclick="closeModal()">Зрозуміло</button></div>`);
 }
 $("#qrBtn").onclick = openQR;
+$("#docsBtn").onclick = () => go("#docs");
 $("#dlBtn").onclick = () => {
   if (OFF.state === "ready") openInstall();
   else if (OFF.state === "file") modal(`<h2>Офлайн-версія</h2><p>Ви відкрили курс з флешки або папки — він уже працює без інтернету.</p><div class="mrow"><button class="btn fx p" onclick="closeModal()">Добре</button></div>`);
