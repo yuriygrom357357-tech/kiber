@@ -418,6 +418,17 @@ h1,h2,h3{font-family:var(--f-head)}
 .doc .da a:hover,.doc .da button:hover{border-color:var(--acc)}
 .doc .da .pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
 @media (max-width:720px){.doc{flex-wrap:wrap}.doc .da{width:100%;justify-content:flex-start}.doc .di{display:none}}
+
+.cmap{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:18px 0 0}
+.cmap a{display:flex;flex-direction:column;gap:2px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);text-decoration:none;color:var(--muted);font-size:13px;font-weight:600}
+.cmap a b{font-family:var(--f-head);font-size:20px;color:var(--acc);line-height:1}
+.cmap a:hover{border-color:var(--acc);color:var(--ink)}
+@media (max-width:560px){.cmap{grid-template-columns:repeat(3,1fr)}}
+.blockh{scroll-margin-top:76px}
+.pr-sec{margin-top:22px}
+.pr-sec h2{font-family:var(--f-head);text-transform:uppercase;font-size:18px;letter-spacing:.03em;margin-bottom:8px}
+.pr-sec ol{margin:0 0 0 20px}.pr-sec li{margin:6px 0;line-height:1.5}
+.pr-links{display:flex;flex-wrap:wrap;gap:8px}
 /* emblem + 3D word */
 .emb{--s:104px;width:var(--s);height:var(--s);border-radius:50%;background:linear-gradient(#2F7FE0 50%,#FFD500 50%);display:grid;place-items:center;flex:none}
 .emb>i{width:calc(var(--s)*.885);height:calc(var(--s)*.885);border-radius:50%;background:var(--bg);display:grid;place-items:center}
@@ -506,6 +517,7 @@ function route(){
   else if(a==="goal"){stopAudio(true);renderGoal();}
   else if(a==="aar"){stopAudio(true);renderAAR();}
   else if(a==="docs"){stopAudio(true);renderDocs();}
+  else if(a==="prac"){stopAudio(true);renderPrac(b);}
   else if(a&&byId[a]){openTopic(a,b==="test"?"test":"lec");}
   else{stopAudio(true);renderHome();}
   window.scrollTo(0,0);
@@ -556,6 +568,7 @@ function renderHome(){
     <p>Слухайте лекцію — текст іде паралельно. Закріплюйте тестом: заняття засвоєне від ${PASS}%. Для практики — оціночний лист і тренажери.</p>
     <div class="cta">${last&&byId[last]?`<button class="btn fx p" data-go="#${last}">${icon("play")} Продовжити: ${esc(byId[last].short)}</button>`:`<button class="btn fx p" data-go="#${T[0].id}">${icon("play")} Почати з першого заняття</button>`}
       <button class="btn fx" data-go="#sheet">${icon("sheet")} Оціночний лист</button><button class="btn fx" data-go="#docs">${icon("book")} Нормативні документи</button></div>
+    <nav class="cmap" aria-label="Структура курсу">${["Теорія","Лекції","Практичні","Польові","Іспит","Стажування"].map((x,i)=>`<a href="#" data-blk="${i+1}"><b>${i+1}</b>${x}</a>`).join("")}</nav>
     <div id="offCard"></div>
     <div class="stats">
       <div class="stat card"><b>${passed}/${T.length}</b><span>занять засвоєно</span></div>
@@ -580,15 +593,31 @@ function renderHome(){
       html+=`</div>`;
     });
   });
-  html+=`<div class="blockh">Практика<small>Блоки 2–5: проведення занять, оцінювання, іспит</small></div><div class="list" style="margin-top:12px">
+  (DATA.blocks||[]).forEach((B,bi)=>{
+    html+=`<div class="blockh" id="blk${bi+2}">${esc(B.block)}<small>${B.h} навчальних годин · ${["пробні лекції","пробні практичні заняття","пробні польові заняття","теорія і практика","у навчальному підрозділі БЗВП"][bi]||""}</small></div>`;
+    B.mods.forEach(m=>{
+      html+=`<div class="mod"><h2>${esc(m.mod)}</h2></div><div class="list">`;
+      m.items.forEach(it=>{
+        if(it.lesson&&byId[it.lesson]){const id=it.lesson,t=byId[id];const b=best(id);const done=b&&b.pct>=PASS;
+          const badge=b?`<span class="badge ${b.pct>=PASS?"good":"low"}">${b.s}/${b.n}</span>`:`<span class="badge">${t.test.length} пит.</span>`;
+          html+=`<button class="row fx ${done?"done":""}" data-go="#${id}"><span class="num">${done?"✓":icon("play").replace('<svg','<svg style="width:16px;height:16px"')}</span><span class="t"><span class="code">${esc(it.code)}</span><b>${esc(t.title)}</b><span>${mins(id)} хв аудіо · ${t.sections.length} розділів · лекція і тест</span></span>${badge}</button>`;
+        }else if(it.key){
+          html+=`<button class="row fx prac" data-go="#prac/${it.key}"><span class="num">${icon(it.exam?"test":it.sheet?"sheet":"book").replace('<svg','<svg style="width:17px;height:17px"')}</span><span class="t"><span class="code">${esc(it.code)} · ${esc(it.kind)}</span><b>${esc(it.title)}</b><span>${esc(it.hours)}${it.sheet?" · оціночний лист":""}${it.docs&&it.docs.length?` · документів: ${it.docs.length}`:""}</span></span><span class="go">›</span></button>`;
+        }
+      });
+      html+=`</div>`;
+    });
+  });
+  html+=`<div class="blockh">Інструменти інструктора<small>Документи, оцінювання, тренажери</small></div><div class="list" style="margin-top:12px">
     <button class="row fx tool" data-go="#docs"><span class="num">${icon("book")}</span><span class="t"><b>Нормативні документи</b><span>Програма курсу, доктрина, накази, стандарти СТІ, бланки, теми пробних занять. Відкрити, роздрукувати або зберегти на комп’ютер.</span></span><span class="go">›</span></button>
-    <button class="row fx tool" data-go="#sheet"><span class="num">${icon("sheet")}</span><span class="t"><b>Оціночний лист</b><span>Самооцінка пробного заняття: лекційне, практичне (без зброї / зі зброєю), польове. Бали 3–2–1–0 і підсумок рахуються самі.</span></span><span class="go">›</span></button>
+    <button class="row fx tool" data-go="#sheet"><span class="num">${icon("sheet")}</span><span class="t"><b>Оціночний лист</b><span>Оцінювання пробного заняття: лекційне, практичне (без зброї / зі зброєю), польове. Бали 3–2–1–0 і підсумок рахуються самі; відомість — у PDF або Word.</span></span><span class="go">›</span></button>
     <button class="row fx tool" data-go="#goal"><span class="num">${icon("goal")}</span><span class="t"><b>Тренажер «Опис цілі»</b><span>Складіть ціль, вимоги, умови й критерії — додаток перевірить формулювання.</span></span><span class="go">›</span></button>
     <button class="row fx tool" data-go="#aar"><span class="num">${icon("aar")}</span><span class="t"><b>Тренажер АПД</b><span>Сценарій оборони позиції: проведіть аналіз за чотирма запитаннями і порівняйте з еталоном.</span></span><span class="go">›</span></button>
   </div>
   <div class="exam"><div><b>Підсумковий тест</b><span>${Math.min(30,maxPts)} випадкових питань з усіх відкритих занять. Як теоретична частина іспиту: 90% — відмінно, 80% — добре, 70% — задовільно.</span></div><button class="btn fx p" data-go="#exam">Скласти тест</button></div>
   <footer class="foot"><span>158 навчальний центр · ${DEV} · TO BE PRODUCTION</span><span>За Програмою «Курс інструктора базового рівня», ТП 7-418.78, 2025</span></footer></div>`;
   $("#view").innerHTML=html;bindGo();renderOff();
+  document.querySelectorAll(".cmap a").forEach(a=>a.onclick=e=>{e.preventDefault();const n=+a.dataset.blk;const el=n===1?document.querySelector(".blockh"):document.getElementById("blk"+n);if(el)el.scrollIntoView({behavior:"smooth"})});
 }
 
 /* ---------- topic ---------- */
@@ -1023,6 +1052,29 @@ function paintSum(type,st){
   fin.innerHTML=`<h2>Підсумок і розбір</h2><p>${why}</p>${weak.length?`<p><b>Над чим працювати</b> — пункти з оцінкою 0 і 1, з них почніть розбір (АПД):</p><ul>${weak.map(([n,t,v,st])=>`<li><b>${v}</b> — ${n}. ${esc(t)}${st?' <span style="color:var(--amb)">★</span>':""}</li>`).join("")}</ul>`:(r.rated?"<p>Пунктів з оцінкою 0 або 1 немає.</p>":"")}<p style="color:var(--muted);font-size:14px">У відомість записують бал і словесну оцінку, наприклад: «2,61 (виконано)».</p>`;
 }
 
+/* ---------- ПРАКТИЧНІ ЕТАПИ (Блоки 2–6) ---------- */
+function renderPrac(key){
+  let it=null,B=null;(DATA.blocks||[]).forEach(b=>b.mods.forEach(m=>m.items.forEach(x=>{if(x.key===key){it=x;B=b}})));
+  if(!it){renderHome();return}
+  S={view:"prac"};hidePlayer();setHead(it.kind,it.code);
+  const docs=(it.docs||[]).map(id=>{for(const sec of DATA.docs||[])for(const d of sec.items)if(d.id===id)return d;return null}).filter(Boolean);
+  const SN={lec:"Лекційне",nowpn:"Практичне без зброї",wpn:"Практичне зі зброєю",field:"Польове"};
+  let h=`<div class="wrap"><div class="thead"><span class="eyebrow">${esc(B.block)}</span><h1>${esc(it.title)}</h1><p>${esc(it.code)} · ${esc(it.hours)}</p></div>
+  <div class="card" style="padding:16px 18px"><b>Мета.</b> ${esc(it.goal)}<div style="margin-top:8px"><b>Як оцінюється.</b> ${esc(it.eval)}</div></div>
+  <section class="pr-sec"><h2>Як проходить</h2><ol>${it.how.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>
+  <section class="pr-sec"><h2>Що зробити в додатку</h2><div class="pr-links">
+   ${it.exam?`<button class="btn fx p" data-go="#exam">${icon("test")} Тренувальний тест</button>`:""}
+   ${it.sheet?`<button class="btn fx p" data-go="#sheet/${it.sheet}">${icon("sheet")} Оціночний лист «${SN[it.sheet]}»</button>`:""}
+   ${(it.lessons||[]).filter(id=>byId[id]).map(id=>`<button class="btn fx" data-go="#${id}">${icon("play")} ${esc(byId[id].short)}</button>`).join("")}
+   ${it.key==="b2t2"||it.key==="b3t2"||it.key==="b4t2"?`<button class="btn fx" data-go="#goal">${icon("goal")} Тренажер «Опис цілі»</button><button class="btn fx" data-go="#aar">${icon("aar")} Тренажер АПД</button>`:""}
+  </div></section>`;
+  if(docs.length){h+=`<section class="pr-sec"><h2>Документи і бланки</h2>`;
+    docs.forEach(d=>{const meta=[d.p?`${d.p} с.`:"",d.kb>=1024?(d.kb/1024).toFixed(1).replace(".",",")+" МБ":d.kb+" КБ","PDF"+(d.w?" · Word":"")].filter(Boolean).join(" · ");
+      h+=`<div class="doc card"><span class="di">PDF</span><div class="dt"><b>${esc(d.t)}</b><small>${meta}</small></div><div class="da"><a class="pri" href="docs/${d.id}.pdf" target="_blank" rel="noopener">Відкрити</a><button data-print="${d.id}">Друкувати</button><button data-save="${d.id}" data-ext="pdf">Зберегти PDF</button>${d.w?`<button data-save="${d.id}" data-file="${d.w}" data-ext="${d.w.split(".").pop()}">Зберегти Word</button>`:""}</div></div>`});
+    h+=`</section>`}
+  h+=`<div class="cta" style="margin-top:20px"><button class="btn fx" data-go="#">${icon("back")} До курсу</button><button class="btn fx" data-go="#docs">${icon("book")} Усі документи</button></div></div>`;
+  $("#view").innerHTML=h;bindGo();bindDocBtns();
+}
 /* ---------- НОРМАТИВНІ ДОКУМЕНТИ ---------- */
 function docName(it,ext){return it.t.replace(/[\\/:*?"<>|«»]+/g," ").replace(/\s+/g," ").trim().slice(0,110)+"."+ext}
 function renderDocs(){
@@ -1040,9 +1092,12 @@ function renderDocs(){
   });
   h+=`<p style="color:var(--dim);font-size:13.5px;margin-top:22px">Стандарти СТІ і довідкові матеріали мають обмеження розповсюдження: використовуються в межах Сил оборони, копії — з дозволу розробника.</p></div>`;
   $("#view").innerHTML=h;bindGo();
-  const find=it=>D.flatMap(x=>x.items).find(i=>i.id===it);
   document.querySelectorAll(".dtoc a").forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById(a.dataset.sec).scrollIntoView({behavior:"smooth"})});
   $("#dQ").oninput=e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll(".doc").forEach(d=>d.style.display=!q||d.dataset.q.includes(q)?"":"none");document.querySelectorAll(".dsec").forEach(sc=>sc.style.display=[...sc.querySelectorAll(".doc")].some(d=>d.style.display!=="none")?"":"none")};
+  bindDocBtns();
+}
+function bindDocBtns(){
+  const find=id=>(DATA.docs||[]).flatMap(x=>x.items).find(i=>i.id===id);
   document.querySelectorAll("[data-print]").forEach(b=>b.onclick=()=>printPdf("docs/"+b.dataset.print+".pdf"));
   document.querySelectorAll("[data-save]").forEach(b=>b.onclick=()=>{const it=find(b.dataset.save),ext=b.dataset.ext,file=b.dataset.file||it.id+".pdf";
     busy(b,"Зберігаю…",async()=>{const name=docName(it,ext);

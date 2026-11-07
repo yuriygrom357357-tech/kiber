@@ -155,7 +155,7 @@ def build_html():
             t2["test"].append(list(item) + ([m] if ok else []))
         topics.append(t2)
     QA = {"letters": [cid(l + ".") for l in LETTERS], "right": cid("Правильно."), "wrong": cid("Неправильно. Правильна відповідь:")}
-    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None, "docs": docs_data()}
+    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None, "docs": docs_data(), "blocks": __import__("blocks").BLOCKS}
     tpl = open(os.path.join(ROOT, "src", "app.html")).read()
     files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "vendor/html2pdf.bundle.min.js", "vendor/docx.min.js", "icons/emblem.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
     audio = []

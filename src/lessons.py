@@ -301,7 +301,11 @@ try:
     from lessons4 import L4
 except ImportError:
     L4 = []
-L.extend(L2 + L3 + L4)
+try:
+    from lessons5 import L5
+except ImportError:
+    L5 = []
+L.extend(L2 + L3 + L4 + L5)
 _tr = str.maketrans({"Б": "b", "М": "m", "Т": "t", "З": "z", " ": ""})
 for B in COURSE:
     for m in B["mods"]:
