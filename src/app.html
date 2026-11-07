@@ -817,7 +817,7 @@ function renderSheet(type){
    <li><span><b>Оберіть вид заняття,</b> яке проводить курсант: лекційне, практичне без зброї, практичне зі зброєю чи польове. У кожного виду свій перелік пунктів.</span></li>
    <li><span><b>Впишіть,</b> кого оцінюєте і тему заняття — це потрапить у результат.</span></li>
    <li><span><b>Під час заняття ставте бал за кожним пунктом:</b> 3 — без помилок, 2 — дрібні помилки, 1 — грубі помилки, 0 — не виконано. Пункти з <span style="color:var(--amb);font-weight:700">★</span> критичні: нуль у такому пункті — заняття не зараховано. Порушення безпеки чи техніки EDIP позначте внизу листа. Повторне натискання знімає бал.</span></li>
-   <li><span><b>Після заняття</b> подивіться підсумок унизу: середній бал, рішення і перелік пунктів на 0 та 1. За ним проведіть розбір (АПД) з курсантом, а кнопкою «Зберегти відомість (PDF)» збережіть заповнену відомість у потрібну папку на комп’ютері (можна одразу створити нову). «Друк» — паперовий примірник, «Порожній бланк» — для заповнення ручкою.</span></li></ol>
+   <li><span><b>Після заняття</b> подивіться підсумок унизу: середній бал, рішення і перелік пунктів на 0 та 1. За ним проведіть розбір (АПД) з курсантом, а відомість збережіть на комп’ютері: «Зберегти у PDF» — готовий документ, який не змінюється; «Зберегти у Word (.docx)» — документ, який можна доповнити чи виправити у Word. У вікні збереження оберіть потрібну папку або створіть нову. «Друкувати» — паперовий примірник, «Порожній бланк» — бланк для заповнення ручкою.</span></li></ol>
    <div class="tip"><b>Курсанту:</b> перед своїм пробним заняттям пройдіться пунктами як чек-листом — саме за ними вас оцінюватимуть. Лист зберігається на цьому пристрої; для нового курсанта натисніть «Очистити лист».</div></details>
   <div class="seg" role="tablist">${SHEET_TYPES.map(([k,l])=>`<button class="${k===type?"on":""}" data-go="#sheet/${k}">${l}</button>`).join("")}</div>
   <p class="tdesc">Обрано: <b>${esc(TDESC[type]||"")}</b>. Пунктів — ${cnt}, з них критичних ★ — ${stars}.</p>
@@ -850,7 +850,7 @@ function renderSheet(type){
    <label class="flag card fx"><input type="checkbox" id="fStop" ${st.stop?"checked":""}><span>Заняття призупинено через порушення заходів безпеки<small>Автоматично «не виконано»</small></span></label>
    <label class="flag card fx"><input type="checkbox" id="fEdip" ${st.edip?"checked":""}><span>Порушено техніку EDIP<small>Автоматично «не виконано»</small></span></label></div>
   <div class="final card" id="final"></div>
-  <div class="cta" style="margin-top:16px"><button class="btn fx p" id="shSave">Зберегти відомість (PDF)</button><button class="btn fx" id="shPrint">Друк</button><button class="btn fx" id="shBlank">Порожній бланк</button><button class="btn fx" id="shCopy">Скопіювати результат</button><button class="btn fx" id="shReset">Очистити лист</button></div>
+  <div class="cta" style="margin-top:16px"><button class="btn fx p" id="shSave">Зберегти у PDF</button><button class="btn fx p" id="shDocx">Зберегти у Word (.docx)</button><button class="btn fx" id="shPrint">Друкувати</button><button class="btn fx" id="shBlank">Порожній бланк</button><button class="btn fx" id="shCopy">Скопіювати результат</button><button class="btn fx" id="shReset">Очистити лист</button></div>
   <div class="sumbar" id="sumbar"></div></div>`;
   $("#view").innerHTML=h;bindGo();
   $("#howD").ontoggle=()=>store.set("howSeen",true);$("#guideD").ontoggle=()=>store.set("sheetGuideSeen",true);
@@ -864,7 +864,7 @@ function renderSheet(type){
   $("#fStop").onchange=e=>{st.stop=e.target.checked;save();paintSum(type,st)};
   $("#fEdip").onchange=e=>{st.edip=e.target.checked;save();paintSum(type,st)};
   $("#fWho").oninput=e=>{st.who=e.target.value;save()};$("#fTopic").oninput=e=>{st.topic=e.target.value;save()};
-  $("#shSave").onclick=e=>saveSheetPdf(type,st,e.currentTarget);$("#shPrint").onclick=()=>printSheet(type,st,false);$("#shBlank").onclick=()=>printSheet(type,st,true);
+  $("#shSave").onclick=e=>saveSheetPdf(type,st,e.currentTarget);$("#shDocx").onclick=e=>saveSheetDocx(type,st,e.currentTarget);$("#shPrint").onclick=()=>printSheet(type,st,false);$("#shBlank").onclick=()=>printSheet(type,st,true);
   $("#shReset").onclick=()=>{if(!confirmInline("shReset"))return;store.set("sheet_"+type,{v:{},stop:false,edip:false,who:"",topic:""});renderSheet(type)};
   $("#shCopy").onclick=()=>{const r=calcSheet(type,st);const txt=`Оціночний лист — ${SHEET_TYPES.find(x=>x[0]===type)[1]} заняття\nНавчаємий: ${st.who||"—"}\nТема: ${st.topic||"—"}\nСередній бал: ${r.avg===null?"—":fmt2(r.avg)} (${r.verdict})\nОцінено пунктів: ${r.rated}/${r.total}${r.reasons.length?"\nПричини: "+r.reasons.join("; "):""}${(()=>{const w=[];DATA.sheets[type].forEach((g,gi)=>g.items.forEach((it,ii)=>{const v=st.v[gi+"_"+ii];if(v===0||v===1)w.push(`${v} — ${it.t}`)}));return w.length?"\nНад чим працювати:\n"+w.join("\n"):""})()}`;
     if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{$("#shCopy").textContent="Скопійовано ✓"},()=>{});};
@@ -896,25 +896,78 @@ function sheetDoc(type,st,blank){
 function printSheet(type,st,blank){let pa=document.getElementById("printArea");if(!pa){pa=document.createElement("div");pa.id="printArea";pa.className="pdoc";document.body.appendChild(pa)}
   pa.innerHTML=sheetDoc(type,st,blank);window.print()}
 function loadScript(src){return new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
-async function saveSheetPdf(type,st,btn){
-  const t0=btn.textContent;btn.disabled=true;btn.textContent="Готую PDF…";
-  try{
-    if(!window.html2pdf)await loadScript("vendor/html2pdf.bundle.min.js");
-    const tl=SHEET_TYPES.find(x=>x[0]===type)[1],d=new Date();
-    const ds=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
-    const name=(`Відомість ${ds} ${st.who||"курсант"} ${tl}`).replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g,"_").slice(0,120)+".pdf";
-    const el=document.createElement("div");el.className="pdoc";el.style.cssText="width:190mm;background:#fff";el.innerHTML=sheetDoc(type,st,false);
-    await document.fonts.ready;await new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src="icons/emblem.png"});
-    const blob=await html2pdf().set({margin:[10,10,12,10],image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#ffffff",useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".pt2",".psig"]}}).from(el).outputPdf("blob");
-    if(window.showSaveFilePicker){
-      try{const h=await showSaveFilePicker({suggestedName:name,types:[{description:"Документ PDF",accept:{"application/pdf":[".pdf"]}}]});const w=await h.createWritable();await w.write(blob);await w.close();btn.textContent="Збережено ✓";setTimeout(()=>btn.textContent=t0,2500);return}
-      catch(e){if(e&&e.name==="AbortError"){btn.textContent=t0;return}}
-    }
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-    btn.textContent="Збережено ✓";setTimeout(()=>btn.textContent=t0,2500);
-  }catch(e){console.error(e);btn.textContent="Не вдалося — спробуйте «Друк / PDF»";setTimeout(()=>btn.textContent=t0,4000)}
+function sheetFileName(type,st,ext){
+  const tl=SHEET_TYPES.find(x=>x[0]===type)[1],d=new Date();
+  const ds=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+  return (`Відомість ${ds} ${st.who||"курсант"} ${tl}`).replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g,"_").slice(0,120)+"."+ext;
+}
+/* зберегти файл на комп’ютері: вікно «Зберегти як» з вибором папки (Chrome, Edge), інакше — у «Завантаження» */
+async function saveFile(blob,name,desc,mime,ext){
+  if(window.showSaveFilePicker){
+    try{const h=await showSaveFilePicker({suggestedName:name,types:[{description:desc,accept:{[mime]:["."+ext]}}]});const w=await h.createWritable();await w.write(blob);await w.close();return "saved"}
+    catch(e){if(e&&e.name==="AbortError")return "cancel"}
+  }
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);return "saved";
+}
+async function busy(btn,label,fn){
+  const t0=btn.textContent;btn.disabled=true;btn.textContent=label;
+  try{const r=await fn();btn.textContent=r==="cancel"?t0:"Збережено ✓";if(r!=="cancel")setTimeout(()=>btn.textContent=t0,2500)}
+  catch(e){console.error(e);btn.textContent="Не вдалося зберегти";setTimeout(()=>btn.textContent=t0,4000)}
   finally{btn.disabled=false}
 }
+function saveSheetPdf(type,st,btn){return busy(btn,"Готую PDF…",async()=>{
+  if(!window.html2pdf)await loadScript("vendor/html2pdf.bundle.min.js");
+  const el=document.createElement("div");el.className="pdoc";el.style.cssText="width:190mm;background:#fff";el.innerHTML=sheetDoc(type,st,false);
+  await document.fonts.ready;await new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src="icons/emblem.png"});
+  const blob=await html2pdf().set({margin:[10,10,12,10],image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#ffffff",useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".pt2",".psig"]}}).from(el).outputPdf("blob");
+  return saveFile(blob,sheetFileName(type,st,"pdf"),"Документ PDF","application/pdf","pdf");
+})}
+function saveSheetDocx(type,st,btn){return busy(btn,"Готую документ Word…",async()=>{
+  if(!window.docx)await loadScript("vendor/docx.min.js");
+  const D=window.docx,G=DATA.sheets[type],tl=SHEET_TYPES.find(x=>x[0]===type)[1],r=calcSheet(type,st);
+  const F="Arial",PT=n=>Math.round(n*2);
+  const T=(text,o={})=>new D.TextRun({text:String(text),font:F,size:PT(o.size||9),bold:!!o.bold,color:o.color||"000000",allCaps:!!o.caps});
+  const P=(runs,o={})=>new D.Paragraph({children:Array.isArray(runs)?runs:[runs],alignment:o.align||D.AlignmentType.LEFT,spacing:{before:o.before||0,after:o.after===undefined?40:o.after},keepNext:!!o.keepNext});
+  const B={style:D.BorderStyle.SINGLE,size:4,color:"000000"},NB={style:D.BorderStyle.NONE,size:0,color:"FFFFFF"};
+  const ALL={top:B,bottom:B,left:B,right:B},NONE={top:NB,bottom:NB,left:NB,right:NB};
+  const C=(children,o={})=>new D.TableCell({children:Array.isArray(children)?children:[children],width:{size:o.w,type:D.WidthType.DXA},columnSpan:o.span,shading:o.fill?{fill:o.fill,type:D.ShadingType.CLEAR,color:"auto"}:undefined,verticalAlign:o.v||D.VerticalAlign.TOP,borders:o.nob?NONE:ALL,margins:{top:30,bottom:30,left:70,right:70}});
+  const W=[450,8522,450,450,450,450],TW=10772,mark=on=>on?"☒":"☐";
+  let logo=[];try{const buf=await fetch("icons/emblem.png").then(x=>x.arrayBuffer());logo=[new D.ImageRun({data:buf,transformation:{width:52,height:52}})]}catch(e){}
+  const head=new D.Table({width:{size:TW,type:D.WidthType.DXA},columnWidths:[9772,1000],rows:[new D.TableRow({children:[
+    C([P(T("158 навчальний центр · Курс інструктора базового рівня",{size:8,caps:true})),P(T("Оціночний лист пробного заняття",{size:15,bold:true,caps:true})),P([T("Вид заняття: ",{size:10}),T(tl,{size:10,bold:true})])],{w:9772,nob:true,v:D.VerticalAlign.CENTER}),
+    C(P(logo,{align:D.AlignmentType.RIGHT}),{w:1000,nob:true,v:D.VerticalAlign.CENTER})]})]});
+  const today=new Date().toLocaleDateString("uk-UA");
+  const fld=(l,v)=>P([T(l+": ",{size:9,color:"333333"}),T(v||"________________________________",{size:9,bold:!!v})],{after:60});
+  const rows=[new D.TableRow({tableHeader:true,children:["№","Пункт оцінювання і критерій","3","2","1","0"].map((h,i)=>C(P(T(h,{bold:true,size:8.5}),{align:D.AlignmentType.CENTER}),{w:W[i],fill:"E6E6E6",v:D.VerticalAlign.CENTER}))})];
+  let n=0;
+  G.forEach((g,gi)=>{rows.push(new D.TableRow({cantSplit:true,children:[C(P(T(g.g,{bold:true,size:8.5,caps:true}),{keepNext:true}),{w:TW,span:6,fill:"F0F0F0"})]}));
+    g.items.forEach((it,ii)=>{n++;const v=st.v[gi+"_"+ii];
+      rows.push(new D.TableRow({cantSplit:true,children:[
+        C(P(T(n,{size:8.5}),{align:D.AlignmentType.CENTER}),{w:W[0]}),
+        C([P(T(it.t+(it.s?" ★":""),{bold:true,size:9}),{after:0}),P(T(it.d,{size:7.5,color:"333333"}),{after:0})],{w:W[1]}),
+        ...[3,2,1,0].map((x,k)=>C(P(T(v===x?"X":"",{bold:true,size:10}),{align:D.AlignmentType.CENTER}),{w:W[2+k],v:D.VerticalAlign.CENTER}))]}))})});
+  const main=new D.Table({width:{size:TW,type:D.WidthType.DXA},columnWidths:W,rows});
+  const sv=(a,b)=>[C(P(T(a,{size:9})),{w:2693}),C(P(T(b,{size:9,bold:true})),{w:2693})];
+  const sum=new D.Table({width:{size:TW,type:D.WidthType.DXA},columnWidths:[2693,2693,2693,2693],rows:[
+    new D.TableRow({cantSplit:true,children:[...sv("Сума балів",r.rated?String(r.sum):""),...sv("Оцінено пунктів",`${r.rated} з ${r.total}`)]}),
+    new D.TableRow({cantSplit:true,children:[...sv("Середній бал",r.avg===null?"":fmt2(r.avg)),...sv("Рішення",r.avg===null&&!r.reasons.length?"":r.verdict)]})]});
+  const kids=[head,P(T(""),{after:60}),fld("Навчаємий (звання, прізвище)",st.who),fld("Тема заняття",st.topic),fld("Дата",today),fld("Оцінювач",""),
+    P([T("Шкала: ",{bold:true,size:8}),T("3 — виконано безпомилково; 2 — з невеликими помилками; 1 — з грубими помилками, але правильно за структурою; 0 — не виконано (менше 50% вимог). ★ — критичний пункт.",{size:8})],{after:80}),
+    main,
+    P([T(mark(st.stop)+" Заняття призупинено через порушення заходів безпеки      ",{size:9}),T(mark(st.edip)+" Порушено техніку EDIP",{size:9})],{before:100,after:80}),
+    sum];
+  if(r.reasons.length)kids.push(P([T("Причини «не виконано»: ",{bold:true,size:8.5}),T(r.reasons.join("; "),{size:8.5})],{before:60}));
+  kids.push(P([T("Правила: ",{bold:true,size:8}),T("середній бал = сума балів ÷ кількість оцінених пунктів (до двох знаків після коми). Виконано — 2,48–3,00; не виконано — 0,00–2,47. Автоматично «не виконано»: 0 у пункті ★; нулі більш ніж у 5 звичайних пунктах; заняття призупинено через порушення заходів безпеки; порушено техніку EDIP.",{size:8})],{before:80}));
+  kids.push(P(T("Оцінювач ____________________________ (підпис)",{size:9}),{before:300,after:160}));
+  kids.push(P(T("З результатом ознайомлений ____________________________ (підпис навчаємого)",{size:9})));
+  const doc=new D.Document({creator:"КІБЕР · 158 навчальний центр",title:"Оціночний лист пробного заняття",
+    sections:[{properties:{page:{size:{width:11906,height:16838,orientation:D.PageOrientation.PORTRAIT},margin:{top:567,bottom:680,left:567,right:567}}},
+      footers:{default:new D.Footer({children:[new D.Paragraph({alignment:D.AlignmentType.RIGHT,children:[T("Аркуш ",{size:8,color:"555555"}),new D.TextRun({children:[D.PageNumber.CURRENT],font:F,size:16,color:"555555"}),T(" з ",{size:8,color:"555555"}),new D.TextRun({children:[D.PageNumber.TOTAL_PAGES],font:F,size:16,color:"555555"})]})]})},
+      children:kids}]});
+  const blob=await D.Packer.toBlob(doc);
+  return saveFile(blob,sheetFileName(type,st,"docx"),"Документ Word","application/vnd.openxmlformats-officedocument.wordprocessingml.document","docx");
+})}
+
 function fmt2(x){return x.toFixed(2).replace(".",",")}
 function calcSheet(type,st){
   const G=DATA.sheets[type];let total=0,rated=0,sum=0,starZero=[],plainZero=0;

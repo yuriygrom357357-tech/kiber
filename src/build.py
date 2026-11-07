@@ -136,7 +136,7 @@ def build_html():
     QA = {"letters": [cid(l + ".") for l in LETTERS], "right": cid("Правильно."), "wrong": cid("Неправильно. Правильна відповідь:")}
     data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None}
     tpl = open(os.path.join(ROOT, "src", "app.html")).read()
-    files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "vendor/html2pdf.bundle.min.js", "icons/emblem.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
+    files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "vendor/html2pdf.bundle.min.js", "vendor/docx.min.js", "icons/emblem.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
     audio = []
     for t in L:
         for x in TIMING[t["id"]]: audio.append("audio/" + x["f"])
