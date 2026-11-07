@@ -45,7 +45,28 @@ def job():
     json.dump({"voice": "uk-UA-OstapNeural", "rate": "+0%", "sections": secs}, open(os.path.join(ROOT, "tts", "job.json"), "w"), ensure_ascii=False, indent=1)
     print("sections", len(secs), "chars", sum(len(b[1]) for s in secs for b in s["blocks"]))
 
+SITE = "https://yuriygrom357357-tech.github.io/kiber/"
+def icons():
+    from PIL import Image, ImageDraw, ImageFont
+    os.makedirs(os.path.join(ROOT, "icons"), exist_ok=True)
+    fp = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    for name, sz in [("icon-192.png", 192), ("icon-512.png", 512), ("apple-touch-icon.png", 180)]:
+        im = Image.new("RGB", (sz, sz), "#070B12"); d = ImageDraw.Draw(im)
+        g = max(1, sz // 24)
+        for x in range(0, sz, sz // 8): d.line([(x, 0), (x, sz)], fill="#0C1724", width=1); d.line([(0, x), (sz, x)], fill="#0C1724", width=1)
+        m = int(sz * .2); c = int(sz * .14)
+        d.polygon([(m, m), (sz - m - c, m), (sz - m, m + c), (sz - m, sz - m), (m + c, sz - m), (m, sz - m - c)], fill="#22D3EE")
+        f = ImageFont.truetype(fp, int(sz * .27)); t = "КБ"
+        bb = d.textbbox((0, 0), t, font=f); d.text(((sz - bb[2] - bb[0]) / 2, (sz - bb[3] - bb[1]) / 2 - bb[1] * 0), t, font=f, fill="#03131A")
+        im.save(os.path.join(ROOT, "icons", name))
+    man = {"name": "КІБЕР · Курс інструктора базового рівня · 158 навчальний центр", "short_name": "КІБЕР",
+      "description": "Курс інструктора базового рівня: лекції з озвучкою, тести, оціночний лист, тренажери. Працює офлайн.",
+      "start_url": "./", "scope": "./", "display": "standalone", "orientation": "any", "lang": "uk", "background_color": "#070B12", "theme_color": "#070B12",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}
+    json.dump(man, open(os.path.join(ROOT, "manifest.webmanifest"), "w"), ensure_ascii=False, indent=1)
+
 def build_html():
+    icons()
     tm = json.load(open(os.path.join(ROOT, "tts", "timing.json")))
     TIMING = {}
     for t in L:
@@ -69,6 +90,11 @@ def build_html():
     idx_size = len(out.encode()) + 4000
     assets = [["./", idx_size], ["index.html", idx_size]] + assets
     out = out.replace("/*ASSETS*/null", json.dumps(assets, ensure_ascii=False))
+    import segno, io
+    q = segno.make(SITE, error="m"); buf = io.BytesIO(); q.save(buf, kind="svg", scale=1, border=1, dark="#0B1422", light="#FFFFFF", xmldecl=False, svgns=True, nl=False)
+    n = q.symbol_size(scale=1, border=1)[0]
+    svg = re.sub(r'width="\d+" height="\d+"', 'viewBox="0 0 %d %d"' % (n, n), buf.getvalue().decode(), count=1)
+    out = out.replace("/*QR*/", svg)
     open(os.path.join(ROOT, "index.html"), "w").write(out)
     sw = open(os.path.join(ROOT, "src", "sw.js")).read().replace("__CACHE__", ver).replace("__SHELL__", json.dumps(["./"] + files))
     open(os.path.join(ROOT, "sw.js"), "w").write(sw)
