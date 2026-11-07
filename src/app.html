@@ -359,44 +359,45 @@ h1,h2,h3{font-family:var(--f-head)}
 /* друк оціночного листа: A4, книжкова */
 #printArea{display:none}
 @page{size:A4 portrait;margin:10mm 10mm 12mm;@bottom-right{content:"Аркуш " counter(page) " з " counter(pages);font:8pt 'IBM Plex Sans',sans-serif;color:#555}}
+.pdoc{font:9pt/1.3 'IBM Plex Sans',Arial,sans-serif;color:#000;background:#fff}
+.pdoc .ph{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:8px}
+.pdoc .pk{font:8pt 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+.pdoc h1{font:700 15pt 'Fira Sans Condensed',Arial;text-transform:uppercase;margin:2px 0}
+.pdoc .pt{font-size:10pt}
+.pdoc .plogo .emb{--s:58px}
+.pdoc .pfs{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:6px}
+.pdoc .pf{display:flex;gap:6px;align-items:baseline;font-size:8.5pt}
+.pdoc .pf span{white-space:nowrap;color:#333}
+.pdoc .pf b{flex:1;border-bottom:1px solid #000;font-weight:600;min-height:14px;padding-left:4px}
+.pdoc .pleg,.pdoc .prule,.pdoc .prs{font-size:8pt;margin:4px 0}
+.pdoc table{width:100%;border-collapse:collapse}
+.pdoc .pt1 th{background:#e6e6e6;border:1px solid #000;padding:3px;font-size:8.5pt}
+.pdoc .pt1 td{border:1px solid #000;padding:1.5px 4px;vertical-align:top;line-height:1.2}
+.pdoc .pt1 tr{break-inside:avoid}
+.pdoc .pt1 thead{display:table-header-group}
+.pdoc .pg td{background:#f0f0f0;font:700 8.5pt 'Fira Sans Condensed',Arial;text-transform:uppercase;letter-spacing:.04em}
+.pdoc .pn{width:22px;text-align:center}
+.pdoc .ps{width:24px;text-align:center;vertical-align:middle!important}
+.pdoc .pd{font-size:7.2pt;color:#333;line-height:1.18}
+.pdoc .pb{display:inline-block;width:11px;height:11px;border:1px solid #000;line-height:10px;font-size:9pt;font-weight:700;text-align:center;vertical-align:middle}
+.pdoc .pfl{margin:6px 0;font-size:8.5pt}
+.pdoc .pt2{margin-top:4px;break-inside:avoid}
+.pdoc .pt2 td{border:1px solid #000;padding:4px 6px;font-size:9pt;width:25%}
+.pdoc .psig{display:flex;justify-content:space-between;gap:20px;margin-top:12px;font-size:8.5pt;break-inside:avoid}
+.pdoc .emb,.pdoc .emb *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pdoc .pg td,.pdoc th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 @media print{
  :root{color-scheme:light!important}
  html,body{background:#fff!important;background-image:none!important;color:#000}
  main,header,.player{display:none!important}
  body>*:not(#printArea){display:none!important}
- #printArea{display:block;font:9pt/1.3 'IBM Plex Sans',Arial,sans-serif;color:#000}
- #printArea .ph{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:8px}
- #printArea .pk{font:8pt 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
- #printArea h1{font:700 15pt 'Fira Sans Condensed',Arial;text-transform:uppercase;margin:2px 0}
- #printArea .pt{font-size:10pt}
- #printArea .plogo .emb{--s:58px}
- #printArea .pfs{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:6px}
- #printArea .pf{display:flex;gap:6px;align-items:baseline;font-size:8.5pt}
- #printArea .pf span{white-space:nowrap;color:#333}
- #printArea .pf b{flex:1;border-bottom:1px solid #000;font-weight:600;min-height:14px;padding-left:4px}
- #printArea .pleg,#printArea .prule,#printArea .prs{font-size:8pt;margin:4px 0}
- #printArea table{width:100%;border-collapse:collapse}
- #printArea .pt1 th{background:#e6e6e6;border:1px solid #000;padding:3px;font-size:8.5pt}
- #printArea .pt1 td{border:1px solid #000;padding:1.5px 4px;vertical-align:top;line-height:1.2}
- #printArea .pt1 tr{break-inside:avoid}
- #printArea .pt1 thead{display:table-header-group}
- #printArea .pg td{background:#f0f0f0;font:700 8.5pt 'Fira Sans Condensed',Arial;text-transform:uppercase;letter-spacing:.04em}
- #printArea .pn{width:22px;text-align:center}
- #printArea .ps{width:24px;text-align:center;vertical-align:middle!important}
- #printArea .pd{font-size:7.2pt;color:#333;line-height:1.18}
- #printArea .pb{display:inline-block;width:11px;height:11px;border:1px solid #000;line-height:10px;font-size:9pt;font-weight:700;text-align:center;vertical-align:middle}
- #printArea .pfl{margin:6px 0;font-size:8.5pt}
- #printArea .pt2{margin-top:4px;break-inside:avoid}
- #printArea .pt2 td{border:1px solid #000;padding:4px 6px;font-size:9pt;width:25%}
- #printArea .psig{display:flex;justify-content:space-between;gap:20px;margin-top:12px;font-size:8.5pt;break-inside:avoid}
- #printArea .emb,#printArea .emb *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
- #printArea .pg td,#printArea th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #printArea{display:block}
 }
 /* emblem + 3D word */
 .emb{--s:104px;width:var(--s);height:var(--s);border-radius:50%;background:linear-gradient(#2F7FE0 50%,#FFD500 50%);display:grid;place-items:center;flex:none}
 .emb>i{width:calc(var(--s)*.885);height:calc(var(--s)*.885);border-radius:50%;background:var(--bg);display:grid;place-items:center}
 .emb>i>i{width:calc(var(--s)*.805);height:calc(var(--s)*.805);border-radius:50%;background:#1B2116;box-shadow:inset 0 0 0 1px var(--line2);display:grid;place-items:center}
-.emb svg{height:calc(var(--s)*.69);width:auto;fill:#ECE7D6;display:block}
+.emb svg{height:calc(var(--s)*.69);width:calc(var(--s)*.354);fill:#ECE7D6;display:block}
 .mark .emb{--s:38px}
 .mark .emb>i>i{box-shadow:none}
 .hero .brandrow{display:flex;align-items:center;gap:22px;margin:14px 0 14px}
@@ -483,7 +484,7 @@ function route(){
   window.scrollTo(0,0);
 }
 const FIG='<path d="M29.5 21.5 Q50 11 70.5 21.5 Q71 24 68.5 25.5 L64.5 30 L35.5 30 L31.5 25.5 Q29 24 29.5 21.5 Z"/><path d="M36 30.8 L64 30.8 L64 34.2 L36 34.2 Z"/><path d="M35 35 L65 35 Q64.5 38.5 58 40 Q50 41.2 42 40 Q35.5 38.5 35 35 Z"/><path d="M42 41.2 Q50 42.4 58 41.2 L57.6 43 Q56 48 50 49 Q44 48 42.4 43 Z"/><path d="M44.5 46 L55.5 46 L57 53 L43 53 Z"/><path d="M43 52 L57 52 Q66 53 71 56 Q73 58 72.5 63 L68 84 L64 97 L36 97 L32 84 L27.5 63 Q27 58 29 56 Q34 53 43 52 Z"/><path d="M28 55.5 Q21 57 19.5 62 L13.5 81 Q12.5 85 16 87.5 L32 94 L33.5 89 L21.5 82.5 L26.5 66 Z"/><path d="M72 55.5 Q79 57 80.5 62 L86.5 81 Q87.5 85 84 87.5 L68 94 L66.5 89 L78.5 82.5 L73.5 66 Z"/><path d="M35.5 96 L64.5 96 L66 104 L79 147 L82 150 Q83 155 78 155 L66 155 L64.5 150 L52.5 114 Q50 109.5 47.5 114 L35.5 150 L34 155 L22 155 Q17 155 18 150 L21 147 L34 104 Z"/><g fill="none" stroke="#1B2116" stroke-linecap="round"> <circle cx="50" cy="23.6" r="2.2" stroke-width="1.3"/> <path d="M50 56 L50 96" stroke-width="1.2"/> <path d="M36 92.5 L64 92.5" stroke-width="1.8"/> <path d="M39 64 L46 63.5 M54 63.5 L61 64" stroke-width="1.2"/></g>';
-function emblem(){return `<span class="emb" aria-hidden="true"><i><i><svg viewBox="12 9 76 148">${FIG}</svg></i></i></span>`}
+function emblem(){return `<span class="emb" aria-hidden="true"><i><i><svg xmlns="http://www.w3.org/2000/svg" viewBox="12 9 76 148" fill="#ECE7D6">${FIG}</svg></i></i></span>`}
 function kword(){let e="";for(let i=1;i<=10;i++)e+=`<text x="${4+i}" y="${92+i}" fill="${i<10?"#3E4A32":"#232b1c"}">КІБЕР</text>`;
  return `<svg class="kword" viewBox="0 0 480 116" aria-hidden="true"><defs><filter id="kwF" x="-5%" y="-10%" width="110%" height="130%">
  <feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="b"/>
@@ -816,7 +817,7 @@ function renderSheet(type){
    <li><span><b>Оберіть вид заняття,</b> яке проводить курсант: лекційне, практичне без зброї, практичне зі зброєю чи польове. У кожного виду свій перелік пунктів.</span></li>
    <li><span><b>Впишіть,</b> кого оцінюєте і тему заняття — це потрапить у результат.</span></li>
    <li><span><b>Під час заняття ставте бал за кожним пунктом:</b> 3 — без помилок, 2 — дрібні помилки, 1 — грубі помилки, 0 — не виконано. Пункти з <span style="color:var(--amb);font-weight:700">★</span> критичні: нуль у такому пункті — заняття не зараховано. Порушення безпеки чи техніки EDIP позначте внизу листа. Повторне натискання знімає бал.</span></li>
-   <li><span><b>Після заняття</b> подивіться підсумок унизу: середній бал, рішення і перелік пунктів на 0 та 1. За ним проведіть розбір (АПД) з курсантом, а кнопкою «Скопіювати результат» перенесіть бал у паперову відомість або месенджер.</span></li></ol>
+   <li><span><b>Після заняття</b> подивіться підсумок унизу: середній бал, рішення і перелік пунктів на 0 та 1. За ним проведіть розбір (АПД) з курсантом, а кнопкою «Зберегти відомість (PDF)» збережіть заповнену відомість у потрібну папку на комп’ютері (можна одразу створити нову). «Друк» — паперовий примірник, «Порожній бланк» — для заповнення ручкою.</span></li></ol>
    <div class="tip"><b>Курсанту:</b> перед своїм пробним заняттям пройдіться пунктами як чек-листом — саме за ними вас оцінюватимуть. Лист зберігається на цьому пристрої; для нового курсанта натисніть «Очистити лист».</div></details>
   <div class="seg" role="tablist">${SHEET_TYPES.map(([k,l])=>`<button class="${k===type?"on":""}" data-go="#sheet/${k}">${l}</button>`).join("")}</div>
   <p class="tdesc">Обрано: <b>${esc(TDESC[type]||"")}</b>. Пунктів — ${cnt}, з них критичних ★ — ${stars}.</p>
@@ -849,7 +850,7 @@ function renderSheet(type){
    <label class="flag card fx"><input type="checkbox" id="fStop" ${st.stop?"checked":""}><span>Заняття призупинено через порушення заходів безпеки<small>Автоматично «не виконано»</small></span></label>
    <label class="flag card fx"><input type="checkbox" id="fEdip" ${st.edip?"checked":""}><span>Порушено техніку EDIP<small>Автоматично «не виконано»</small></span></label></div>
   <div class="final card" id="final"></div>
-  <div class="cta" style="margin-top:16px"><button class="btn fx p" id="shPrint">Друк / PDF</button><button class="btn fx" id="shBlank">Порожній бланк</button><button class="btn fx" id="shCopy">Скопіювати результат</button><button class="btn fx" id="shReset">Очистити лист</button></div>
+  <div class="cta" style="margin-top:16px"><button class="btn fx p" id="shSave">Зберегти відомість (PDF)</button><button class="btn fx" id="shPrint">Друк</button><button class="btn fx" id="shBlank">Порожній бланк</button><button class="btn fx" id="shCopy">Скопіювати результат</button><button class="btn fx" id="shReset">Очистити лист</button></div>
   <div class="sumbar" id="sumbar"></div></div>`;
   $("#view").innerHTML=h;bindGo();
   $("#howD").ontoggle=()=>store.set("howSeen",true);$("#guideD").ontoggle=()=>store.set("sheetGuideSeen",true);
@@ -863,14 +864,14 @@ function renderSheet(type){
   $("#fStop").onchange=e=>{st.stop=e.target.checked;save();paintSum(type,st)};
   $("#fEdip").onchange=e=>{st.edip=e.target.checked;save();paintSum(type,st)};
   $("#fWho").oninput=e=>{st.who=e.target.value;save()};$("#fTopic").oninput=e=>{st.topic=e.target.value;save()};
-  $("#shPrint").onclick=()=>printSheet(type,st,false);$("#shBlank").onclick=()=>printSheet(type,st,true);
+  $("#shSave").onclick=e=>saveSheetPdf(type,st,e.currentTarget);$("#shPrint").onclick=()=>printSheet(type,st,false);$("#shBlank").onclick=()=>printSheet(type,st,true);
   $("#shReset").onclick=()=>{if(!confirmInline("shReset"))return;store.set("sheet_"+type,{v:{},stop:false,edip:false,who:"",topic:""});renderSheet(type)};
   $("#shCopy").onclick=()=>{const r=calcSheet(type,st);const txt=`Оціночний лист — ${SHEET_TYPES.find(x=>x[0]===type)[1]} заняття\nНавчаємий: ${st.who||"—"}\nТема: ${st.topic||"—"}\nСередній бал: ${r.avg===null?"—":fmt2(r.avg)} (${r.verdict})\nОцінено пунктів: ${r.rated}/${r.total}${r.reasons.length?"\nПричини: "+r.reasons.join("; "):""}${(()=>{const w=[];DATA.sheets[type].forEach((g,gi)=>g.items.forEach((it,ii)=>{const v=st.v[gi+"_"+ii];if(v===0||v===1)w.push(`${v} — ${it.t}`)}));return w.length?"\nНад чим працювати:\n"+w.join("\n"):""})()}`;
     if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{$("#shCopy").textContent="Скопійовано ✓"},()=>{});};
   paintSum(type,st);
 }
 let confirmT={};function confirmInline(id){const b=$("#"+id);if(confirmT[id]){clearTimeout(confirmT[id]);confirmT[id]=0;return true}b.textContent="Натисніть ще раз, щоб очистити";confirmT[id]=setTimeout(()=>{confirmT[id]=0;b.textContent="Очистити лист"},3000);return false}
-function printSheet(type,st,blank){
+function sheetDoc(type,st,blank){
   const G=DATA.sheets[type],tl=SHEET_TYPES.find(x=>x[0]===type)[1];const r=calcSheet(type,st);let n=0;
   const box=(on)=>`<span class="pb${on?" on":""}">${on?"✕":""}</span>`;
   let rows="";G.forEach((g,gi)=>{rows+=`<tr class="pg"><td colspan="6">${esc(g.g)}</td></tr>`;
@@ -881,7 +882,7 @@ function printSheet(type,st,blank){
   const sumRow=blank?`<tr><td>Сума балів</td><td></td><td>Оцінено пунктів</td><td></td></tr><tr><td>Середній бал</td><td></td><td>Рішення</td><td>виконано / не виконано</td></tr>`
    :`<tr><td>Сума балів</td><td>${r.rated?r.sum:""}</td><td>Оцінено пунктів</td><td>${r.rated} з ${r.total}</td></tr><tr><td>Середній бал</td><td>${r.avg===null?"":fmt2(r.avg)}</td><td>Рішення</td><td><b>${r.avg===null&&!r.reasons.length?"":esc(r.verdict)}</b></td></tr>`;
   const flags=`<div class="pfl">${box(!blank&&st.stop)} Заняття призупинено через порушення заходів безпеки &nbsp;&nbsp; ${box(!blank&&st.edip)} Порушено техніку EDIP</div>`;
-  const html=`<div class="ph"><div><div class="pk">158 навчальний центр · Курс інструктора базового рівня</div><h1>Оціночний лист пробного заняття</h1><div class="pt">Вид заняття: <b>${esc(tl)}</b></div></div><div class="plogo">${emblem()}</div></div>
+  const html=`<div class="ph"><div><div class="pk">158 навчальний центр · Курс інструктора базового рівня</div><h1>Оціночний лист пробного заняття</h1><div class="pt">Вид заняття: <b>${esc(tl)}</b></div></div><div class="plogo"><img src="icons/emblem.png" alt="" width="58" height="58" style="width:58px;height:58px;max-width:none;display:block;flex:none"></div></div>
    <div class="pfs">${f("Навчаємий (звання, прізвище)",blank?"":st.who)}${f("Тема заняття",blank?"":st.topic)}${f("Дата",blank?"":today)}${f("Оцінювач","")}</div>
    <div class="pleg"><b>Шкала:</b> 3 — виконано безпомилково; 2 — з невеликими помилками; 1 — з грубими помилками, але правильно за структурою; 0 — не виконано (менше 50% вимог). ★ — критичний пункт.</div>
    <table class="pt1"><thead><tr><th>№</th><th>Пункт оцінювання і критерій</th><th>3</th><th>2</th><th>1</th><th>0</th></tr></thead><tbody>${rows}</tbody></table>
@@ -890,8 +891,29 @@ function printSheet(type,st,blank){
    ${!blank&&r.reasons.length?`<div class="prs"><b>Причини «не виконано»:</b> ${r.reasons.map(esc).join("; ")}</div>`:""}
    <div class="prule"><b>Правила:</b> середній бал = сума балів ÷ кількість оцінених пунктів (до двох знаків). Виконано — 2,48–3,00; не виконано — 0,00–2,47. Автоматично «не виконано»: 0 у пункті ★; нулі більш ніж у 5 звичайних пунктах; заняття призупинено через порушення заходів безпеки; порушено техніку EDIP.</div>
    <div class="psig"><div>Оцінювач ____________________ (підпис)</div><div>З результатом ознайомлений ____________________ (підпис навчаємого)</div></div>`;
-  let pa=document.getElementById("printArea");if(!pa){pa=document.createElement("div");pa.id="printArea";document.body.appendChild(pa)}
-  pa.innerHTML=html;window.print();
+  return html;
+}
+function printSheet(type,st,blank){let pa=document.getElementById("printArea");if(!pa){pa=document.createElement("div");pa.id="printArea";pa.className="pdoc";document.body.appendChild(pa)}
+  pa.innerHTML=sheetDoc(type,st,blank);window.print()}
+function loadScript(src){return new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const e=document.createElement("script");e.src=src;e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
+async function saveSheetPdf(type,st,btn){
+  const t0=btn.textContent;btn.disabled=true;btn.textContent="Готую PDF…";
+  try{
+    if(!window.html2pdf)await loadScript("vendor/html2pdf.bundle.min.js");
+    const tl=SHEET_TYPES.find(x=>x[0]===type)[1],d=new Date();
+    const ds=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+    const name=(`Відомість ${ds} ${st.who||"курсант"} ${tl}`).replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g,"_").slice(0,120)+".pdf";
+    const el=document.createElement("div");el.className="pdoc";el.style.cssText="width:190mm;background:#fff";el.innerHTML=sheetDoc(type,st,false);
+    await document.fonts.ready;await new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src="icons/emblem.png"});
+    const blob=await html2pdf().set({margin:[10,10,12,10],image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#ffffff",useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".pt2",".psig"]}}).from(el).outputPdf("blob");
+    if(window.showSaveFilePicker){
+      try{const h=await showSaveFilePicker({suggestedName:name,types:[{description:"Документ PDF",accept:{"application/pdf":[".pdf"]}}]});const w=await h.createWritable();await w.write(blob);await w.close();btn.textContent="Збережено ✓";setTimeout(()=>btn.textContent=t0,2500);return}
+      catch(e){if(e&&e.name==="AbortError"){btn.textContent=t0;return}}
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    btn.textContent="Збережено ✓";setTimeout(()=>btn.textContent=t0,2500);
+  }catch(e){console.error(e);btn.textContent="Не вдалося — спробуйте «Друк / PDF»";setTimeout(()=>btn.textContent=t0,4000)}
+  finally{btn.disabled=false}
 }
 function fmt2(x){return x.toFixed(2).replace(".",",")}
 function calcSheet(type,st){

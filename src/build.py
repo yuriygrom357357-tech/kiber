@@ -80,6 +80,8 @@ def icons():
     fp = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     import shutil
     brand = os.path.join(ROOT, "src", "brand")
+    if os.path.exists(os.path.join(brand, "emblem.png")):
+        shutil.copy(os.path.join(brand, "emblem.png"), os.path.join(ROOT, "icons", "emblem.png"))
     for name, sz in [("icon-192.png", 192), ("icon-512.png", 512), ("apple-touch-icon.png", 180)]:
         if os.path.exists(os.path.join(brand, name)):
             shutil.copy(os.path.join(brand, name), os.path.join(ROOT, "icons", name)); continue
@@ -134,7 +136,7 @@ def build_html():
     QA = {"letters": [cid(l + ".") for l in LETTERS], "right": cid("Правильно."), "wrong": cid("Неправильно. Правильна відповідь:")}
     data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None}
     tpl = open(os.path.join(ROOT, "src", "app.html")).read()
-    files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
+    files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "vendor/html2pdf.bundle.min.js", "icons/emblem.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
     audio = []
     for t in L:
         for x in TIMING[t["id"]]: audio.append("audio/" + x["f"])
