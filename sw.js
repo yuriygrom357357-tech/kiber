@@ -1,5 +1,5 @@
 /* КІБЕР — service worker: офлайн-кеш курсу */
-const CACHE = "kb-563002";
+const CACHE = "kb-273244";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "fonts/golos-cyrillic-400.woff2", "fonts/golos-cyrillic-500.woff2", "fonts/golos-cyrillic-600.woff2", "fonts/golos-cyrillic-700.woff2", "fonts/golos-cyrillic-800.woff2", "fonts/golos-latin-400.woff2", "fonts/golos-latin-500.woff2", "fonts/golos-latin-600.woff2", "fonts/golos-latin-700.woff2", "fonts/golos-latin-800.woff2"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
