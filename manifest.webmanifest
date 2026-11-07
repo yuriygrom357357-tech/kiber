@@ -7,8 +7,8 @@
  "display": "standalone",
  "orientation": "any",
  "lang": "uk",
- "background_color": "#070B12",
- "theme_color": "#070B12",
+ "background_color": "#10130D",
+ "theme_color": "#10130D",
  "icons": [
   {
    "src": "icons/icon-192.png",

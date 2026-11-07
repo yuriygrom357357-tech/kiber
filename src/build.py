@@ -51,17 +51,30 @@ def icons():
     os.makedirs(os.path.join(ROOT, "icons"), exist_ok=True)
     fp = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     for name, sz in [("icon-192.png", 192), ("icon-512.png", 512), ("apple-touch-icon.png", 180)]:
-        im = Image.new("RGB", (sz, sz), "#070B12"); d = ImageDraw.Draw(im)
-        g = max(1, sz // 24)
-        for x in range(0, sz, sz // 8): d.line([(x, 0), (x, sz)], fill="#0C1724", width=1); d.line([(0, x), (sz, x)], fill="#0C1724", width=1)
-        m = int(sz * .2); c = int(sz * .14)
-        d.polygon([(m, m), (sz - m - c, m), (sz - m, m + c), (sz - m, sz - m), (m + c, sz - m), (m, sz - m - c)], fill="#22D3EE")
-        f = ImageFont.truetype(fp, int(sz * .27)); t = "КБ"
-        bb = d.textbbox((0, 0), t, font=f); d.text(((sz - bb[2] - bb[0]) / 2, (sz - bb[3] - bb[1]) / 2 - bb[1] * 0), t, font=f, fill="#03131A")
+        S = 4; W = sz * S
+        im = Image.new("RGB", (W, W), "#10130D"); d = ImageDraw.Draw(im)
+        u = W / 36.0
+        P = lambda pts: [(x * u, y * u) for x, y in pts]
+        import math
+        shield = [(18, 4), (30.5, 8.4)] + [(30.5, 8.4 + k * 0.9) for k in range(1, 10)]
+        # контур щита
+        pts = [(18, 4.5), (30, 8.6), (30, 17)]
+        for k in range(1, 21):
+            t = k / 20; pts.append((30 - 12 * t, 17 + 14.2 * math.sin(t * math.pi / 2)))
+        for k in range(1, 21):
+            t = k / 20; pts.append((18 - 12 * t, 31.2 - 14.2 * (1 - math.cos(t * math.pi / 2))))
+        pts += [(6, 8.6)]
+        d.polygon(P(pts), fill="#1B2116", outline="#F2A33A", width=int(1.6 * u))
+        c = (18 * u, 17.6 * u); r = 6.2 * u
+        d.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], outline="#F2A33A", width=int(1.7 * u))
+        for (x1, y1, x2, y2) in [(18, 8.5, 18, 13), (18, 22.2, 18, 26.7), (8.9, 17.6, 13.4, 17.6), (22.6, 17.6, 27.1, 17.6)]:
+            d.line(P([(x1, y1), (x2, y2)]), fill="#F2A33A", width=int(1.7 * u))
+        rr = 1.6 * u; d.ellipse([c[0] - rr, c[1] - rr, c[0] + rr, c[1] + rr], fill="#F2A33A")
+        im = im.resize((sz, sz), Image.LANCZOS)
         im.save(os.path.join(ROOT, "icons", name))
     man = {"name": "КІБЕР · Курс інструктора базового рівня · 158 навчальний центр", "short_name": "КІБЕР",
       "description": "Курс інструктора базового рівня: лекції з озвучкою, тести, оціночний лист, тренажери. Працює офлайн.",
-      "start_url": "./", "scope": "./", "display": "standalone", "orientation": "any", "lang": "uk", "background_color": "#070B12", "theme_color": "#070B12",
+      "start_url": "./", "scope": "./", "display": "standalone", "orientation": "any", "lang": "uk", "background_color": "#10130D", "theme_color": "#10130D",
       "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}
     json.dump(man, open(os.path.join(ROOT, "manifest.webmanifest"), "w"), ensure_ascii=False, indent=1)
 

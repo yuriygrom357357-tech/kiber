@@ -1,6 +1,6 @@
 /* КІБЕР — service worker: офлайн-кеш курсу */
-const CACHE = "kb-273244";
-const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "fonts/golos-cyrillic-400.woff2", "fonts/golos-cyrillic-500.woff2", "fonts/golos-cyrillic-600.woff2", "fonts/golos-cyrillic-700.woff2", "fonts/golos-cyrillic-800.woff2", "fonts/golos-latin-400.woff2", "fonts/golos-latin-500.woff2", "fonts/golos-latin-600.woff2", "fonts/golos-latin-700.woff2", "fonts/golos-latin-800.woff2"];
+const CACHE = "kb-149879";
+const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "fonts/dela-gothic-one-cyrillic-400-normal.woff2", "fonts/dela-gothic-one-latin-400-normal.woff2", "fonts/fira-sans-condensed-cyrillic-600-normal.woff2", "fonts/fira-sans-condensed-cyrillic-700-normal.woff2", "fonts/fira-sans-condensed-latin-600-normal.woff2", "fonts/fira-sans-condensed-latin-700-normal.woff2", "fonts/ibm-plex-sans-cyrillic-400-normal.woff2", "fonts/ibm-plex-sans-cyrillic-600-normal.woff2", "fonts/ibm-plex-sans-latin-400-normal.woff2", "fonts/ibm-plex-sans-latin-600-normal.woff2", "fonts/jetbrains-mono-cyrillic-400-normal.woff2", "fonts/jetbrains-mono-cyrillic-700-normal.woff2", "fonts/jetbrains-mono-latin-400-normal.woff2", "fonts/jetbrains-mono-latin-700-normal.woff2"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
