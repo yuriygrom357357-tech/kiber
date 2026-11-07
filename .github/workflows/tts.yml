@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: tts
+  cancel-in-progress: false
 jobs:
   tts:
     runs-on: ubuntu-latest
@@ -18,4 +21,5 @@ jobs:
           git config user.name "tts-bot"; git config user.email "tts-bot@users.noreply.github.com"
           git add audio tts/timing.json || true
           git commit -m "Озвучка (авто)" || echo nothing
+          git pull --rebase -X theirs || true
           git push
