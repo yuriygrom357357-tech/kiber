@@ -871,6 +871,7 @@ function renderSheet(type){
   paintSum(type,st);
 }
 let confirmT={};function confirmInline(id){const b=$("#"+id);if(confirmT[id]){clearTimeout(confirmT[id]);confirmT[id]=0;return true}b.textContent="Натисніть ще раз, щоб очистити";confirmT[id]=setTimeout(()=>{confirmT[id]=0;b.textContent="Очистити лист"},3000);return false}
+const EMBLEM="/*EMBLEM*/";
 function sheetDoc(type,st,blank){
   const G=DATA.sheets[type],tl=SHEET_TYPES.find(x=>x[0]===type)[1];const r=calcSheet(type,st);let n=0;
   const box=(on)=>`<span class="pb${on?" on":""}">${on?"✕":""}</span>`;
@@ -882,7 +883,7 @@ function sheetDoc(type,st,blank){
   const sumRow=blank?`<tr><td>Сума балів</td><td></td><td>Оцінено пунктів</td><td></td></tr><tr><td>Середній бал</td><td></td><td>Рішення</td><td>виконано / не виконано</td></tr>`
    :`<tr><td>Сума балів</td><td>${r.rated?r.sum:""}</td><td>Оцінено пунктів</td><td>${r.rated} з ${r.total}</td></tr><tr><td>Середній бал</td><td>${r.avg===null?"":fmt2(r.avg)}</td><td>Рішення</td><td><b>${r.avg===null&&!r.reasons.length?"":esc(r.verdict)}</b></td></tr>`;
   const flags=`<div class="pfl">${box(!blank&&st.stop)} Заняття призупинено через порушення заходів безпеки &nbsp;&nbsp; ${box(!blank&&st.edip)} Порушено техніку EDIP</div>`;
-  const html=`<div class="ph"><div><div class="pk">158 навчальний центр · Курс інструктора базового рівня</div><h1>Оціночний лист пробного заняття</h1><div class="pt">Вид заняття: <b>${esc(tl)}</b></div></div><div class="plogo"><img src="icons/emblem.png" alt="" width="58" height="58" style="width:58px;height:58px;max-width:none;display:block;flex:none"></div></div>
+  const html=`<div class="ph"><div><div class="pk">158 навчальний центр · Курс інструктора базового рівня</div><h1>Оціночний лист пробного заняття</h1><div class="pt">Вид заняття: <b>${esc(tl)}</b></div></div><div class="plogo"><img src="${EMBLEM}" alt="" width="58" height="58" style="width:58px;height:58px;max-width:none;display:block;flex:none"></div></div>
    <div class="pfs">${f("Навчаємий (звання, прізвище)",blank?"":st.who)}${f("Тема заняття",blank?"":st.topic)}${f("Дата",blank?"":today)}${f("Оцінювач","")}</div>
    <div class="pleg"><b>Шкала:</b> 3 — виконано безпомилково; 2 — з невеликими помилками; 1 — з грубими помилками, але правильно за структурою; 0 — не виконано (менше 50% вимог). ★ — критичний пункт.</div>
    <table class="pt1"><thead><tr><th>№</th><th>Пункт оцінювання і критерій</th><th>3</th><th>2</th><th>1</th><th>0</th></tr></thead><tbody>${rows}</tbody></table>
@@ -918,7 +919,7 @@ async function busy(btn,label,fn){
 function saveSheetPdf(type,st,btn){return busy(btn,"Готую PDF…",async()=>{
   if(!window.html2pdf)await loadScript("vendor/html2pdf.bundle.min.js");
   const el=document.createElement("div");el.className="pdoc";el.style.cssText="width:190mm;background:#fff";el.innerHTML=sheetDoc(type,st,false);
-  await document.fonts.ready;await new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src="icons/emblem.png"});
+  await document.fonts.ready;await new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src=EMBLEM});
   const blob=await html2pdf().set({margin:[10,10,12,10],image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#ffffff",useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".pt2",".psig"]}}).from(el).outputPdf("blob");
   return saveFile(blob,sheetFileName(type,st,"pdf"),"Документ PDF","application/pdf","pdf");
 })}
@@ -932,7 +933,7 @@ function saveSheetDocx(type,st,btn){return busy(btn,"Готую документ
   const ALL={top:B,bottom:B,left:B,right:B},NONE={top:NB,bottom:NB,left:NB,right:NB};
   const C=(children,o={})=>new D.TableCell({children:Array.isArray(children)?children:[children],width:{size:o.w,type:D.WidthType.DXA},columnSpan:o.span,shading:o.fill?{fill:o.fill,type:D.ShadingType.CLEAR,color:"auto"}:undefined,verticalAlign:o.v||D.VerticalAlign.TOP,borders:o.nob?NONE:ALL,margins:{top:30,bottom:30,left:70,right:70}});
   const W=[450,8522,450,450,450,450],TW=10772,mark=on=>on?"☒":"☐";
-  let logo=[];try{const buf=await fetch("icons/emblem.png").then(x=>x.arrayBuffer());logo=[new D.ImageRun({data:buf,transformation:{width:52,height:52}})]}catch(e){}
+  let logo=[];try{const bin=atob(EMBLEM.split(",")[1]),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);logo=[new D.ImageRun({data:buf,transformation:{width:52,height:52}})]}catch(e){}
   const head=new D.Table({width:{size:TW,type:D.WidthType.DXA},columnWidths:[9772,1000],rows:[new D.TableRow({children:[
     C([P(T("158 навчальний центр · Курс інструктора базового рівня",{size:8,caps:true})),P(T("Оціночний лист пробного заняття",{size:15,bold:true,caps:true})),P([T("Вид заняття: ",{size:10}),T(tl,{size:10,bold:true})])],{w:9772,nob:true,v:D.VerticalAlign.CENTER}),
     C(P(logo,{align:D.AlignmentType.RIGHT}),{w:1000,nob:true,v:D.VerticalAlign.CENTER})]})]});

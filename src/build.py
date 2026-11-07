@@ -154,6 +154,10 @@ def build_html():
     n = q.symbol_size(scale=1, border=1)[0]
     svg = re.sub(r'width="\d+" height="\d+"', 'viewBox="0 0 %d %d"' % (n, n), buf.getvalue().decode(), count=1)
     out = out.replace("/*QR*/", svg)
+    import base64, io
+    from PIL import Image as _I
+    _b = io.BytesIO(); _I.open(os.path.join(ROOT, "src", "brand", "emblem.png")).resize((160, 160), _I.LANCZOS).save(_b, "PNG", optimize=True)
+    out = out.replace('"/*EMBLEM*/"', json.dumps("data:image/png;base64," + base64.b64encode(_b.getvalue()).decode()))
     open(os.path.join(ROOT, "index.html"), "w").write(out)
     sw = open(os.path.join(ROOT, "src", "sw.js")).read().replace("__CACHE__", ver).replace("__SHELL__", json.dumps(["./"] + files))
     open(os.path.join(ROOT, "sw.js"), "w").write(sw)
