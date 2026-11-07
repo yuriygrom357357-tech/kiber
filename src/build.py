@@ -78,7 +78,11 @@ def icons():
     from PIL import Image, ImageDraw, ImageFont
     os.makedirs(os.path.join(ROOT, "icons"), exist_ok=True)
     fp = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    import shutil
+    brand = os.path.join(ROOT, "src", "brand")
     for name, sz in [("icon-192.png", 192), ("icon-512.png", 512), ("apple-touch-icon.png", 180)]:
+        if os.path.exists(os.path.join(brand, name)):
+            shutil.copy(os.path.join(brand, name), os.path.join(ROOT, "icons", name)); continue
         S = 4; W = sz * S
         im = Image.new("RGB", (W, W), "#10130D"); d = ImageDraw.Draw(im)
         u = W / 36.0

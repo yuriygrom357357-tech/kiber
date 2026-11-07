@@ -354,13 +354,42 @@ h1,h2,h3{font-family:var(--f-head)}
   .row{padding:12px;gap:12px}.num{width:34px;height:34px;font-size:13px}
   .hide-sm{display:none}
 }
+
+/* emblem + 3D word */
+.emb{--s:104px;width:var(--s);height:var(--s);border-radius:50%;background:linear-gradient(#2F7FE0 50%,#FFD500 50%);display:grid;place-items:center;flex:none}
+.emb>i{width:calc(var(--s)*.885);height:calc(var(--s)*.885);border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.emb>i>i{width:calc(var(--s)*.805);height:calc(var(--s)*.805);border-radius:50%;background:#1B2116;box-shadow:inset 0 0 0 1px var(--line2);display:grid;place-items:center}
+.emb svg{height:calc(var(--s)*.69);width:auto;fill:#ECE7D6;display:block}
+.mark .emb{--s:38px}
+.mark .emb>i>i{box-shadow:none}
+.hero .brandrow{display:flex;align-items:center;gap:22px;margin:14px 0 14px}
+.hero h1.kh{margin:0;flex:1;min-width:0;max-width:480px;line-height:0}
+.kword{width:100%;height:auto;display:block;overflow:visible}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:560px){.hero .brandrow{gap:14px}.hero .brandrow .emb{--s:74px}}
+/* sheet guide */
+.steps{counter-reset:st;display:grid;gap:10px;margin:16px 0 4px;padding:16px 18px}
+.steps h2{font-family:var(--f-head);text-transform:uppercase;font-size:18px;letter-spacing:.03em}
+.steps ol{list-style:none;display:grid;gap:10px;padding:0;margin:0}
+.steps li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;line-height:1.45}
+.steps li:before{counter-increment:st;content:counter(st);flex:none;width:28px;height:28px;border-radius:8px;background:var(--acc);color:var(--onacc);font-weight:800;display:grid;place-items:center;font-family:var(--f-head)}
+.steps .tip{font-size:14.5px;color:var(--muted);border-top:1px dashed var(--line2);padding-top:10px}
+.tdesc{font-size:14.5px;color:var(--muted);margin:8px 0 0}
+.grp h3 .gp{color:var(--dim);letter-spacing:.04em}
+.grp h3 .gp.done{color:var(--ok)}
+.final{margin-top:18px;padding:16px 18px}
+.final h2{font-family:var(--f-head);text-transform:uppercase;font-size:18px;letter-spacing:.03em;margin-bottom:6px}
+.final p{font-size:15.5px;margin:6px 0}
+.final ul{margin:6px 0 0 18px;font-size:15px}
+.final li{margin:3px 0}
+.final li b{font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
 
 <header class="top"><div class="wrap">
   <button class="brand" id="homeBtn" aria-label="На головну">
-    <span class="mark"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 2 32 7v10c0 8.5-6 14.6-14 17C10 31.6 4 25.5 4 17V7z" fill="#1B2116" stroke="#F2A33A" stroke-width="2"/><circle cx="18" cy="17" r="6.5" fill="none" stroke="#F2A33A" stroke-width="2"/><path d="M18 7.5v5M18 21.5v5M8.5 17h5M22.5 17h5" stroke="#F2A33A" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="17" r="1.6" fill="#F2A33A"/></svg></span>
+    <span class="mark" id="hMark"></span>
     <span style="min-width:0"><b id="hTitle">КІБЕР</b><small id="hSub">158 навчальний центр</small></span>
   </button>
   <button class="ib" id="qrBtn" aria-label="QR-код курсу" title="QR-код"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button>
@@ -416,6 +445,25 @@ function route(){
   else{stopAudio(true);renderHome();}
   window.scrollTo(0,0);
 }
+const FIG='<path d="M29.5 21.5 Q50 11 70.5 21.5 Q71 24 68.5 25.5 L64.5 30 L35.5 30 L31.5 25.5 Q29 24 29.5 21.5 Z"/><path d="M36 30.8 L64 30.8 L64 34.2 L36 34.2 Z"/><path d="M35 35 L65 35 Q64.5 38.5 58 40 Q50 41.2 42 40 Q35.5 38.5 35 35 Z"/><path d="M42 41.2 Q50 42.4 58 41.2 L57.6 43 Q56 48 50 49 Q44 48 42.4 43 Z"/><path d="M44.5 46 L55.5 46 L57 53 L43 53 Z"/><path d="M43 52 L57 52 Q66 53 71 56 Q73 58 72.5 63 L68 84 L64 97 L36 97 L32 84 L27.5 63 Q27 58 29 56 Q34 53 43 52 Z"/><path d="M28 55.5 Q21 57 19.5 62 L13.5 81 Q12.5 85 16 87.5 L32 94 L33.5 89 L21.5 82.5 L26.5 66 Z"/><path d="M72 55.5 Q79 57 80.5 62 L86.5 81 Q87.5 85 84 87.5 L68 94 L66.5 89 L78.5 82.5 L73.5 66 Z"/><path d="M35.5 96 L64.5 96 L66 104 L79 147 L82 150 Q83 155 78 155 L66 155 L64.5 150 L52.5 114 Q50 109.5 47.5 114 L35.5 150 L34 155 L22 155 Q17 155 18 150 L21 147 L34 104 Z"/><g fill="none" stroke="#1B2116" stroke-linecap="round"> <circle cx="50" cy="23.6" r="2.2" stroke-width="1.3"/> <path d="M50 56 L50 96" stroke-width="1.2"/> <path d="M36 92.5 L64 92.5" stroke-width="1.8"/> <path d="M39 64 L46 63.5 M54 63.5 L61 64" stroke-width="1.2"/></g>';
+function emblem(){return `<span class="emb" aria-hidden="true"><i><i><svg viewBox="12 9 76 148">${FIG}</svg></i></i></span>`}
+function kword(){let e="";for(let i=1;i<=10;i++)e+=`<text x="${4+i}" y="${92+i}" fill="${i<10?"#3E4A32":"#232b1c"}">КІБЕР</text>`;
+ return `<svg class="kword" viewBox="0 0 480 116" aria-hidden="true"><defs><filter id="kwF" x="-5%" y="-10%" width="110%" height="130%">
+ <feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="b"/>
+ <feDiffuseLighting in="b" surfaceScale="5" diffuseConstant="1.05" lighting-color="#fff" result="d"><feDistantLight azimuth="235" elevation="50"/></feDiffuseLighting>
+ <feSpecularLighting in="b" surfaceScale="5" specularConstant=".75" specularExponent="16" lighting-color="#fff" result="s"><feDistantLight azimuth="235" elevation="48"/></feSpecularLighting>
+ <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/><feBlend in="SourceGraphic" in2="d" mode="multiply" result="sh"/>
+ <feComposite in="sh" in2="s2" operator="arithmetic" k2="1" k3=".55" result="lit"/>
+ <feTurbulence type="fractalNoise" baseFrequency=".035 .09" numOctaves="3" seed="7" result="n1"/>
+ <feColorMatrix in="n1" type="matrix" values="0 0 0 0 .42 0 0 0 0 .43 0 0 0 0 .38 0 0 0 -2.6 1.55" result="sc"/>
+ <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n2"/>
+ <feColorMatrix in="n2" type="matrix" values="0 0 0 0 .25 0 0 0 0 .26 0 0 0 0 .22 0 0 0 -3 1.75" result="gr"/>
+ <feComposite in="sc" in2="SourceAlpha" operator="in" result="sc2"/><feComposite in="gr" in2="SourceAlpha" operator="in" result="gr2"/>
+ <feComponentTransfer in="sc2" result="sc3"><feFuncA type="linear" slope=".55"/></feComponentTransfer>
+ <feComponentTransfer in="gr2" result="gr3"><feFuncA type="linear" slope=".45"/></feComponentTransfer>
+ <feMerge result="m"><feMergeNode in="lit"/><feMergeNode in="sc3"/><feMergeNode in="gr3"/></feMerge><feComposite in="m" in2="SourceAlpha" operator="in"/>
+ </filter></defs><g font-family="'Dela Gothic One'" font-size="112" letter-spacing="2"><text x="14" y="104" fill="rgba(0,0,0,.55)" style="filter:blur(5px)">КІБЕР</text>${e}<text x="4" y="92" fill="#DCD6C2" filter="url(#kwF)">КІБЕР</text></g></svg>`}
+$("#hMark").innerHTML=emblem();
 function setHead(t,s){$("#hTitle").textContent=t;$("#hSub").textContent=s}
 function hidePlayer(){$("#player").classList.add("hidden")}
 
@@ -438,7 +486,7 @@ function renderHome(){
   let html=`<div class="wrap">
   <section class="hero">
     <div class="eyebrow">158 навчальний центр // КІБР</div>
-    <h1>КІБЕР</h1>
+    <div class="brandrow">${emblem()}<h1 class="kh"><span class="sr">КІБЕР</span>${kword()}</h1></div>
     <div class="lead">Курс інструктора базового рівня</div>
     <p>Слухайте лекцію — текст іде паралельно. Закріплюйте тестом: заняття засвоєне від ${PASS}%. Для практики — оціночний лист і тренажери.</p>
     <div class="cta">${last&&byId[last]?`<button class="btn fx p" data-go="#${last}">${icon("play")} Продовжити: ${esc(byId[last].short)}</button>`:`<button class="btn fx p" data-go="#${T[0].id}">${icon("play")} Почати з першого заняття</button>`}
@@ -720,12 +768,22 @@ const THR=2.48;
 function sheetState(type){return store.get("sheet_"+type,{v:{},stop:false,edip:false,who:"",topic:""})}
 function renderSheet(type){
   type=SHEET_TYPES.some(x=>x[0]===type)?type:store.get("sheetType","lec");store.set("sheetType",type);
-  S={view:"sheet",type};hidePlayer();setHead("Оціночний лист","Самооцінка пробного заняття");
+  S={view:"sheet",type};hidePlayer();setHead("Оціночний лист","Оцінювання пробного заняття");
   const G=DATA.sheets[type];const st=sheetState(type);let n=0;
   const howOpen=store.get("howSeen",false)?"":"open";
-  let h=`<div class="wrap"><div class="thead"><span class="eyebrow">Блоки 2–5 // Практика курсантів</span><h1>Оціночний лист</h1><p>Інструктор або напарник оцінює ваше пробне заняття за кожним пунктом. Додаток сам рахує середній бал і показує, зараховано заняття чи ні.</p></div>
+  const TDESC={lec:"лекція або інтерактивна лекція в класі",nowpn:"практичне заняття за EDIP без зброї (медицина, топографія, зв’язок тощо)",wpn:"практичне заняття зі зброєю — додаються пункти про заходи безпеки і поводження зі зброєю",field:"польове заняття на полігоні — найповніший перелік пунктів"};
+  const cnt=G.reduce((a,g)=>a+g.items.length,0),stars=G.reduce((a,g)=>a+g.items.filter(x=>x.s).length,0);
+  const guideOpen=store.get("sheetGuideSeen",false)?"":"open";
+  let h=`<div class="wrap"><div class="thead"><span class="eyebrow">Блоки 2–5 // Пробні заняття</span><h1>Оціночний лист</h1><p>Курсант проводить пробне заняття, а інструктор (або напарник) відмічає кожен пункт листа. Додаток рахує середній бал і виносить рішення за правилами оціночної відомості курсу.</p></div>
+  <details class="steps card" ${guideOpen} id="guideD"><summary class="how" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:10px"><h2 style="flex:1">Як користуватися — 4 кроки</h2><span style="color:var(--muted);font-size:14px;font-weight:600">показати / сховати</span></summary><ol style="margin-top:12px">
+   <li><span><b>Оберіть вид заняття,</b> яке проводить курсант: лекційне, практичне без зброї, практичне зі зброєю чи польове. У кожного виду свій перелік пунктів.</span></li>
+   <li><span><b>Впишіть,</b> кого оцінюєте і тему заняття — це потрапить у результат.</span></li>
+   <li><span><b>Під час заняття ставте бал за кожним пунктом:</b> 3 — без помилок, 2 — дрібні помилки, 1 — грубі помилки, 0 — не виконано. Пункти з <span style="color:var(--amb);font-weight:700">★</span> критичні: нуль у такому пункті — заняття не зараховано. Порушення безпеки чи техніки EDIP позначте внизу листа. Повторне натискання знімає бал.</span></li>
+   <li><span><b>Після заняття</b> подивіться підсумок унизу: середній бал, рішення і перелік пунктів на 0 та 1. За ним проведіть розбір (АПД) з курсантом, а кнопкою «Скопіювати результат» перенесіть бал у паперову відомість або месенджер.</span></li></ol>
+   <div class="tip"><b>Курсанту:</b> перед своїм пробним заняттям пройдіться пунктами як чек-листом — саме за ними вас оцінюватимуть. Лист зберігається на цьому пристрої; для нового курсанта натисніть «Очистити лист».</div></details>
   <div class="seg" role="tablist">${SHEET_TYPES.map(([k,l])=>`<button class="${k===type?"on":""}" data-go="#sheet/${k}">${l}</button>`).join("")}</div>
-  <details class="how card" ${howOpen} id="howD"><summary><span class="q">?</span>Як оцінюється: що означають 3, 2, 1, 0<span class="ch">показати / сховати</span></summary><div class="hb">
+  <p class="tdesc">Обрано: <b>${esc(TDESC[type]||"")}</b>. Пунктів — ${cnt}, з них критичних ★ — ${stars}.</p>
+  <details class="how card" ${howOpen} id="howD"><summary><span class="q">?</span>Що означають 3, 2, 1, 0 і як рахується підсумок<span class="ch">показати / сховати</span></summary><div class="hb">
    <div class="scale">
     <b style="background:var(--ok);color:#04130C">3</b><span><strong>Виконано безпомилково.</strong> Пункт виконано повністю і правильно.</span>
     <b style="background:var(--acc);color:var(--onacc)">2</b><span><strong>Виконано з невеликими помилками.</strong> Суть дотримано, але є дрібні недоліки.</span>
@@ -743,7 +801,8 @@ function renderSheet(type){
   </div></details>
   <div class="fields"><label>Навчаємий (кого оцінюють)<input id="fWho" value="${esc(st.who)}" placeholder="Звання, прізвище"></label><label>Тема заняття<input id="fTopic" value="${esc(st.topic)}" placeholder="Наприклад: способи заміни магазину"></label></div>`;
   G.forEach((g,gi)=>{
-    h+=`<div class="grp"><h3><span>${esc(g.g)}</span></h3>`;
+    const gr=g.items.filter((_,ii)=>st.v[gi+"_"+ii]!==undefined).length;
+    h+=`<div class="grp"><h3><span>${esc(g.g)}</span><span class="gp ${gr===g.items.length?"done":""}" id="gp${gi}">${gr}/${g.items.length}</span></h3>`;
     g.items.forEach((it,ii)=>{const k=gi+"_"+ii;const v=st.v[k];n++;
       h+=`<div class="crit card ${it.s?"star":""} ${v===0?"zero":""}" id="c${k}"><div class="ct"><b>${n}. ${esc(it.t)}${it.s?'<span class="st">★ критичний</span>':""}</b><span>${esc(it.d)}</span></div>
       <div class="sc" role="group" aria-label="Бал">${[3,2,1,0].map(x=>`<button data-k="${k}" data-v="${x}" class="${v===x?"on":""}" aria-pressed="${v===x}">${x}</button>`).join("")}</div></div>`});
@@ -752,20 +811,23 @@ function renderSheet(type){
   h+=`<div class="flags">
    <label class="flag card fx"><input type="checkbox" id="fStop" ${st.stop?"checked":""}><span>Заняття призупинено через порушення заходів безпеки<small>Автоматично «не виконано»</small></span></label>
    <label class="flag card fx"><input type="checkbox" id="fEdip" ${st.edip?"checked":""}><span>Порушено техніку EDIP<small>Автоматично «не виконано»</small></span></label></div>
+  <div class="final card" id="final"></div>
   <div class="cta" style="margin-top:16px"><button class="btn fx" id="shCopy">Скопіювати результат</button><button class="btn fx" id="shReset">Очистити лист</button></div>
   <div class="sumbar" id="sumbar"></div></div>`;
   $("#view").innerHTML=h;bindGo();
-  $("#howD").ontoggle=()=>store.set("howSeen",true);
+  $("#howD").ontoggle=()=>store.set("howSeen",true);$("#guideD").ontoggle=()=>store.set("sheetGuideSeen",true);
   const save=()=>store.set("sheet_"+type,st);
   document.querySelectorAll(".sc button").forEach(b=>b.onclick=()=>{const k=b.dataset.k,v=+b.dataset.v;
     if(st.v[k]===v)delete st.v[k];else st.v[k]=v;save();
     b.parentNode.querySelectorAll("button").forEach(x=>{const on=st.v[k]===+x.dataset.v;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
-    $("#c"+k).classList.toggle("zero",st.v[k]===0);paintSum(type,st)});
+    $("#c"+k).classList.toggle("zero",st.v[k]===0);
+    const gi=+k.split("_")[0],gl=G[gi].items.length,gr=G[gi].items.filter((_,ii)=>st.v[gi+"_"+ii]!==undefined).length,gp=$("#gp"+gi);gp.textContent=gr+"/"+gl;gp.classList.toggle("done",gr===gl);
+    paintSum(type,st)});
   $("#fStop").onchange=e=>{st.stop=e.target.checked;save();paintSum(type,st)};
   $("#fEdip").onchange=e=>{st.edip=e.target.checked;save();paintSum(type,st)};
   $("#fWho").oninput=e=>{st.who=e.target.value;save()};$("#fTopic").oninput=e=>{st.topic=e.target.value;save()};
   $("#shReset").onclick=()=>{if(!confirmInline("shReset"))return;store.set("sheet_"+type,{v:{},stop:false,edip:false,who:"",topic:""});renderSheet(type)};
-  $("#shCopy").onclick=()=>{const r=calcSheet(type,st);const txt=`Оціночний лист — ${SHEET_TYPES.find(x=>x[0]===type)[1]} заняття\nНавчаємий: ${st.who||"—"}\nТема: ${st.topic||"—"}\nСередній бал: ${r.avg===null?"—":fmt2(r.avg)} (${r.verdict})\nОцінено пунктів: ${r.rated}/${r.total}${r.reasons.length?"\nПричини: "+r.reasons.join("; "):""}`;
+  $("#shCopy").onclick=()=>{const r=calcSheet(type,st);const txt=`Оціночний лист — ${SHEET_TYPES.find(x=>x[0]===type)[1]} заняття\nНавчаємий: ${st.who||"—"}\nТема: ${st.topic||"—"}\nСередній бал: ${r.avg===null?"—":fmt2(r.avg)} (${r.verdict})\nОцінено пунктів: ${r.rated}/${r.total}${r.reasons.length?"\nПричини: "+r.reasons.join("; "):""}${(()=>{const w=[];DATA.sheets[type].forEach((g,gi)=>g.items.forEach((it,ii)=>{const v=st.v[gi+"_"+ii];if(v===0||v===1)w.push(`${v} — ${it.t}`)}));return w.length?"\nНад чим працювати:\n"+w.join("\n"):""})()}`;
     if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{$("#shCopy").textContent="Скопійовано ✓"},()=>{});};
   paintSum(type,st);
 }
@@ -779,14 +841,21 @@ function calcSheet(type,st){
   if(plainZero>5)reasons.push(`нулі у ${plainZero} звичайних пунктах (допустимо не більше 5)`);
   if(st.stop)reasons.push("заняття призупинено через порушення заходів безпеки");
   if(st.edip)reasons.push("порушено техніку EDIP");
-  let verdict;if(reasons.length)verdict="не виконано";else if(avg===null)verdict="не оцінено";else if(rated<total)verdict=avg>=THR?"поки виконано":"поки не виконано";else verdict=avg>=THR?"виконано":"не виконано";
+  let verdict;if(reasons.length)verdict="не виконано";else if(avg===null)verdict="не оцінено";else if(rated<total)verdict=avg>=THR?"попередньо виконано":"попередньо не виконано";else verdict=avg>=THR?"виконано":"не виконано";
   return {total,rated,sum,avg,reasons,verdict,plainZero,starZero};
 }
 function paintSum(type,st){
   const r=calcSheet(type,st);const fail=r.reasons.length>0||(r.avg!==null&&r.avg<THR);
   const cls=r.avg===null&&!r.reasons.length?"wait":(fail?"no":"ok");
-  const label=r.reasons.length?"Не виконано":r.avg===null?"Не оцінено":(r.rated<r.total?(r.avg>=THR?"Поки виконано":"Поки не виконано"):(r.avg>=THR?"Виконано":"Не виконано"));
+  const label=r.reasons.length?"Не виконано":r.avg===null?"Не оцінено":(r.rated<r.total?(r.avg>=THR?"Попередньо: виконано":"Попередньо: не виконано"):(r.avg>=THR?"Виконано":"Не виконано"));
   $("#sumbar").innerHTML=`<div class="in"><div class="avg">${r.avg===null?"—":fmt2(r.avg)}</div><div class="meta">середній бал · поріг 2,48<br>оцінено ${r.rated} з ${r.total}${r.rated<r.total?` · залишилось ${r.total-r.rated}`:""}</div><span class="vchip ${cls}">${label}</span></div>${r.reasons.length?`<div class="reasons">${r.reasons.map(esc).join(" · ")}</div>`:""}`;
+  const fin=$("#final");if(!fin)return;const G=DATA.sheets[type];const weak=[];let n=0;
+  G.forEach((g,gi)=>g.items.forEach((it,ii)=>{n++;const v=st.v[gi+"_"+ii];if(v===0||v===1)weak.push([n,it.t,v,it.s])}));weak.sort((a,b)=>a[2]-b[2]);
+  let why;
+  if(r.avg===null&&!r.reasons.length)why="Ще не поставлено жодного балу. Почніть з першого пункту — підсумок з’явиться тут.";
+  else if(r.reasons.length)why=`Заняття <b>не зараховано</b>, навіть якщо середній бал високий. Причина: ${r.reasons.map(esc).join("; ")}.`;
+  else{const ok=r.avg>=THR;why=`Сума балів ${r.sum} ÷ оцінених пунктів ${r.rated} = <b>${fmt2(r.avg)}</b>. ${ok?"Це не менше порогу 2,48 — <b>виконано</b>.":"Це менше порогу 2,48 — <b>не виконано</b>."}`+(r.rated<r.total?` Оцінено не всі пункти (залишилось ${r.total-r.rated}), тому рішення попереднє.`:"")}
+  fin.innerHTML=`<h2>Підсумок і розбір</h2><p>${why}</p>${weak.length?`<p><b>Над чим працювати</b> — пункти з оцінкою 0 і 1, з них почніть розбір (АПД):</p><ul>${weak.map(([n,t,v,st])=>`<li><b>${v}</b> — ${n}. ${esc(t)}${st?' <span style="color:var(--amb)">★</span>':""}</li>`).join("")}</ul>`:(r.rated?"<p>Пунктів з оцінкою 0 або 1 немає.</p>":"")}<p style="color:var(--muted);font-size:14px">У відомість записують бал і словесну оцінку, наприклад: «2,61 (виконано)».</p>`;
 }
 
 /* ---------- ТРЕНАЖЕР «ОПИС ЦІЛІ» ---------- */
