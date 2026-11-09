@@ -1,0 +1,22 @@
+name: offline-package
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["index.html", "src/pkg/**", ".github/workflows/offline.yml"]
+concurrency: {group: offline, cancel-in-progress: true}
+permissions: {contents: write}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build КІБР folder
+        run: |
+          mkdir -p out && bash src/pkg/make.sh "$PWD" out
+          cd out && zip -qry -X KIBR-offline.zip КІБР && ls -la
+      - name: Publish release asset
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: |
+          gh release view offline >/dev/null 2>&1 || gh release create offline --title "КІБР — офлайн-версія" --notes "Повна офлайн-версія курсу КІБР (26 занять з озвучкою, блоки 1–6, оціночні листи, 49 документів). Розпакуйте архів, перенесіть папку КІБР на флешку цілком і двічі клацніть «Відкрити КІБР» (або значок КІБР на Mac)." --latest
+          gh release upload offline out/KIBR-offline.zip --clobber
