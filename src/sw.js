@@ -1,4 +1,4 @@
-/* КІБЕР — service worker: офлайн-кеш курсу */
+/* КІБР — service worker: офлайн-кеш курсу */
 const CACHE = "__CACHE__";
 const SHELL = __SHELL__;
 self.addEventListener("install", e => {

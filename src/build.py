@@ -1,4 +1,4 @@
-# Збирання «Кібер»: python3 src/build.py job  -> tts/job.json (тексти для озвучки)
+# Збирання «КІБР»: python3 src/build.py job  -> tts/job.json (тексти для озвучки)
 #                   python3 src/build.py html -> index.html, sw.js, manifest
 import json, os, re, sys, html as H
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -106,7 +106,7 @@ def icons():
         rr = 1.6 * u; d.ellipse([c[0] - rr, c[1] - rr, c[0] + rr, c[1] + rr], fill="#F2A33A")
         im = im.resize((sz, sz), Image.LANCZOS)
         im.save(os.path.join(ROOT, "icons", name))
-    man = {"name": "КІБЕР · Курс інструктора базового рівня · 158 навчальний центр", "short_name": "КІБЕР",
+    man = {"name": "КІБР · Курс інструктора базового рівня · 158 навчальний центр", "short_name": "КІБР",
       "description": "Курс інструктора базового рівня: лекції з озвучкою, тести, оціночний лист, тренажери. Працює офлайн.",
       "start_url": "./", "scope": "./", "display": "standalone", "orientation": "any", "lang": "uk", "background_color": "#10130D", "theme_color": "#10130D",
       "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}, {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}]}
