@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: |
-          pip install edge-tts
+          pip install edge-tts pymupdf
           for i in 1 2 3; do sudo apt-get update -qq && sudo apt-get install -y ffmpeg >/dev/null && break; sleep 20; done
           ffmpeg -version | head -1
       - run: python tts/run.py
@@ -24,7 +24,8 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       - run: |
           git config user.name "tts-bot"; git config user.email "tts-bot@users.noreply.github.com"
-          git add audio tts/timing.json tts/eleven || true
+          python src/build.py html || true
+          for p in audio tts/timing.json tts/eleven index.html sw.js; do [ -e "$p" ] && git add "$p"; done; true
           git commit -m "Озвучка (авто)" || echo nothing
           git pull --rebase -X theirs || true
           git push
