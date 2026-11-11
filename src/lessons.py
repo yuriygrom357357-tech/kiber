@@ -322,3 +322,11 @@ for _t in L:
     if _os.path.exists(_p):
         _sp = _ilu.spec_from_file_location("hard_" + _t["id"], _p); _m = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_m)
         _t["test"] = _m.T
+# Вирівнювання довжини варіантів (щоб правильна відповідь не вирізнялась) — src/hard/fix*.py
+_F = {}
+for _fn in sorted(_os.listdir(_hd)):
+    if _fn.startswith("fix") and _fn.endswith(".py"):
+        _sp = _ilu.spec_from_file_location("hard_" + _fn[:-3], _os.path.join(_hd, _fn)); _m = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_m)
+        _F.update(_m.F)
+for _t in L:
+    _t["test"] = [[q, list(_F.get((_t["id"], i), o)), ex] for i, (q, o, ex) in enumerate(_t["test"])]
