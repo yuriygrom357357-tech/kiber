@@ -753,7 +753,7 @@ function renderQ(noVoice){
   box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.k));
   const nx=$("#qNext");if(nx){nx.onclick=nextQ;nx.focus({preventScroll:true})}
   bindVoice();
-  if(!noVoice&&qvOn()){if(Q.picked===null)qReadQuestion();else if(!Q.exam)qReadVerdict();}
+  if(!noVoice&&qvOn()&&Q.picked===null)qReadQuestion();
 }
 /* ---------- озвучка тестів ---------- */
 const qa=new Audio();qa.preload="auto";let QSEQ=[],QSEQi=0,QSEQid=0;
@@ -762,13 +762,11 @@ function qStop(){QSEQ=[];QSEQid++;try{qa.pause()}catch(e){}}
 function qPlay(list){qStop();if(!list.length)return;const my=++QSEQid;QSEQ=list.filter(Boolean);QSEQi=0;
   const next=()=>{if(my!==QSEQid||QSEQi>=QSEQ.length)return;qa.src="audio/"+QSEQ[QSEQi++];qa.playbackRate=store.get("rate",1);qa.play().catch(()=>{})};
   qa.onended=()=>{if(my===QSEQid)setTimeout(next,180)};next();}
-function qReadQuestion(){const it=Q&&Q.items[Q.i];if(!it||!it.clip)return;const L=DATA.qa.letters;
-  const seq=[it.clip.q];it.opts.forEach((o,j)=>{seq.push(L[j],it.clip.o[o.k])});qPlay(seq);}
-function qReadVerdict(){const it=Q&&Q.items[Q.i];if(!it||!it.clip||Q.picked===null)return;const ok=it.opts[Q.picked].ok;
-  const right=it.opts.find(o=>o.ok);qPlay(ok?[DATA.qa.right,it.clip.e]:[DATA.qa.wrong,it.clip.o[right.k],it.clip.e]);}
-function voiceBar(){if(!DATA.qa)return"";const on=qvOn();return `<div class="qvoice"><button class="btn fx sm" id="qvToggle" aria-pressed="${on}">${on?"🔊 Озвучка увімкнена":"🔇 Озвучка вимкнена"}</button>${Q.items[Q.i]&&Q.items[Q.i].clip?`<button class="btn fx sm" id="qvReplay">▶ Прослухати ще раз</button>`:""}</div>`}
+/* озвучується лише текст питання; варіанти курсант читає і вибирає сам */
+function qReadQuestion(){const it=Q&&Q.items[Q.i];if(!it||!it.clip)return;qPlay([it.clip.q]);}
+function voiceBar(){if(!DATA.qa)return"";const on=qvOn();return `<div class="qvoice"><button class="btn fx sm" id="qvToggle" aria-pressed="${on}">${on?"🔊 Озвучка увімкнена":"🔇 Озвучка вимкнена"}</button>${Q.items[Q.i]&&Q.items[Q.i].clip?`<button class="btn fx sm" id="qvReplay">▶ Прослухати питання ще раз</button>`:""}</div>`}
 function bindVoice(){const t=$("#qvToggle");if(t)t.onclick=()=>{store.set("qvoice",!qvOn());if(!qvOn())qStop();renderQ(true)};
-  const r=$("#qvReplay");if(r)r.onclick=()=>Q.picked===null||Q.exam?qReadQuestion():qReadVerdict();}
+  const r=$("#qvReplay");if(r)r.onclick=()=>qReadQuestion();}
 function balWord(n){const a=n%10,b=n%100;if(a===1&&b!==11)return"бал";if(a>=2&&a<=4&&(b<12||b>14))return"бали";return"балів"}
 function pick(k){if(Q.picked!==null)return;qStop();Q.picked=k;const it=Q.items[Q.i];if(it.opts[k].ok)Q.score++;else Q.wrong.push(it);renderQ();
   if(Q.exam){setTimeout(()=>{if(Q&&Q.picked===k&&Q.items[Q.i]===it)nextQ()},650)}}

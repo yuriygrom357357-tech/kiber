@@ -56,12 +56,10 @@ def quiz_clips():
     clips = {}
     def add(text):
         f = cid(text); clips[f] = text; return f
-    for l in LETTERS: add(l + ".")
-    add("Правильно."); add("Неправильно. Правильна відповідь:")
     qmap = {}
     for t in L:
         for i, (q, opts, ex) in enumerate(t["test"]):
-            qmap[(t["id"], i)] = {"q": add(say(q)), "o": [add(say(o)) for o in opts], "e": add(say(ex))}
+            qmap[(t["id"], i)] = {"q": add(say(q))}   # озвучуємо лише питання
     return [{"f": f, "text": x} for f, x in clips.items()], qmap
 
 def job():
@@ -151,11 +149,11 @@ def build_html():
         t2 = dict(t); t2["test"] = []
         for i, item in enumerate(t["test"]):
             m = qmap[(t["id"], i)]
-            ok = have(m["q"]) and all(have(x) for x in m["o"]) and have(m["e"])
+            ok = have(m["q"])
             t2["test"].append(list(item) + ([m] if ok else []))
         topics.append(t2)
-    QA = {"letters": [cid(l + ".") for l in LETTERS], "right": cid("Правильно."), "wrong": cid("Неправильно. Правильна відповідь:")}
-    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA if have(QA["right"]) else None, "docs": docs_data(), "blocks": __import__("blocks").BLOCKS}
+    QA = {"only_q": 1}
+    data = {"topics": topics, "course": COURSE, "sheets": SHEETS, "qa": QA, "docs": docs_data(), "blocks": __import__("blocks").BLOCKS}
     tpl = open(os.path.join(ROOT, "src", "app.html")).read()
     files = ["index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "vendor/html2pdf.bundle.min.js", "vendor/docx.min.js", "icons/emblem.png"] + ["fonts/" + f for f in sorted(os.listdir(os.path.join(ROOT, "fonts")))]
     audio = []
