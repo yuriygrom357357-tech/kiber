@@ -122,8 +122,7 @@ lect_made = 0
 try:
     for sec in lect_todo:
         texts = [t for _, t in sec["blocks"]]
-        prompt = (G.get("lecture_style", G["style"]) + " Прочитай текст лекції повністю, дослівно, нічого не пропускаючи і не додаючи. "
-                  "Між абзацами роби паузу приблизно одну секунду.\n\n" + "\n\n".join(texts))
+        prompt = "\n\n".join(texts)   # лише сам текст, без жодних службових вказівок
         wav = "tts/cache/glect.wav"
         nchar = sum(len(t) for t in texts)
         okaudio = False
@@ -156,6 +155,8 @@ except Limit as e:
 print("Gemini: розділів озвучено", lect_made)
 
 # ---------- Тести ----------
+if not G.get("tests", False):
+    print("Gemini: тести не озвучуються (лишається голос Остап)"); json.dump(done, open(DONE_P, "w")); sys.exit(0)
 clips = [c for c in job.get("clips", []) if done.get(c["f"]) != hashlib.md5((VOICE + c["text"]).encode()).hexdigest()[:10]]
 print("Gemini: кліпів до озвучки", len(clips), "голос", VOICE)
 B = G.get("batch", 10)

@@ -1230,7 +1230,15 @@ let OFF = {state: isFile ? "file" : "unknown", done: 0, bytes: 0};
 let installEvt = null;
 addEventListener("beforeinstallprompt", e => {e.preventDefault(); installEvt = e; renderOff();});
 addEventListener("appinstalled", () => {installEvt = null; renderOff();});
-if (swOK) { navigator.serviceWorker.register("sw.js").catch(() => {}); checkOffline(); }
+if (swOK) {
+  const hadCtrl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
+  }).catch(() => {});
+  /* нова версія курсу -> одразу перезавантажити сторінку, щоб не лишалася стара */
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadCtrl && !window.__kbReload) { window.__kbReload = 1; location.reload(); } });
+  checkOffline();
+}
 async function checkOffline() {
   try { const c = await caches.open(CACHE); let miss = 0;
     for (const [p] of ASSETS) if (!(await c.match(p))) { miss++; break; }
