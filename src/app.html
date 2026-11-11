@@ -691,12 +691,17 @@ function updateUI(){
   $("#pPlay").setAttribute("aria-label",playing?"Пауза":"Слухати");
 }
 function fmt(x){x=Math.floor(x||0);return Math.floor(x/60)+":"+String(x%60).padStart(2,"0")}
-audio.addEventListener("timeupdate",()=>{
-  if(!A.t||S.view!=="topic")return;updateUI();
+/* підсвічування синхронно з голосом: перевірка ~60 разів на секунду (timeupdate — лише ~4 рази) */
+function hlTick(){
+  if(!A.t||S.view!=="topic")return;
   const m=(TIMING[A.t.id][A.s]||{}).m||[];let cur=m[0]&&m[0][0];
-  for(const [id,t] of m){if(audio.currentTime+0.05>=t)cur=id;else break}
+  for(const [id,t] of m){if(audio.currentTime>=t)cur=id;else break}
   if(cur&&cur!==A.cur){A.cur=cur;if(S.tab==="lec")paintNow(cur,true)}
-});
+}
+let hlRaf=0;function hlLoop(){hlTick();if(!audio.paused)hlRaf=requestAnimationFrame(hlLoop)}
+audio.addEventListener("timeupdate",()=>{if(!A.t||S.view!=="topic")return;updateUI();hlTick()});
+audio.addEventListener("seeked",hlTick);
+audio.addEventListener("playing",()=>{cancelAnimationFrame(hlRaf);hlRaf=requestAnimationFrame(hlLoop)});
 audio.addEventListener("play",updateUI);audio.addEventListener("pause",updateUI);
 audio.addEventListener("ended",()=>{
   const lp=Math.max(lecProg(A.t.id),A.s+1);store.set("lec_"+A.t.id,lp);

@@ -145,7 +145,8 @@ try:
             for l in L: starts.append(round(total * acc / sum(L), 2)); acc += l
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", wav, "-ac", "1", "-ar", "24000", "-b:a", "64k", "audio/" + sec["f"]], check=True)
         d = dur("audio/" + sec["f"])
-        timing[sec["f"]] = {"d": round(d, 1), "m": [[bid, st] for (bid, _), st in zip(sec["blocks"], starts)], "k": "g-" + bhash(sec["blocks"]), "g": bhash(sec["blocks"])}
+        sys.path.insert(0, "tts"); from refine_marks import refine
+        timing[sec["f"]] = {"d": round(d, 1), "m": refine("audio/" + sec["f"], [[bid, st] for (bid, _), st in zip(sec["blocks"], starts)]), "k": "g-" + bhash(sec["blocks"]), "g": bhash(sec["blocks"]), "r": 1}
         json.dump(timing, open(TIM_P, "w"), ensure_ascii=False)
         lect_made += 1; print("lecture ok", sec["f"], round(d, 1), "split" if cuts else "proportional")
 except Limit as e:

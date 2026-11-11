@@ -129,7 +129,8 @@ async def main():
         with open(lst, "w") as fh:
             for p in parts: fh.write("file '%s'\n" % os.path.abspath(p))
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", lst, "-ac", "1", "-ar", "24000", "-b:a", "64k", "audio/" + sec["f"]], check=True)
-        timing[sec["f"]] = {"d": round(dur("audio/" + sec["f"]), 1), "m": marks, "k": key}
+        from refine_marks import refine
+        timing[sec["f"]] = {"d": round(dur("audio/" + sec["f"]), 1), "m": refine("audio/" + sec["f"], marks), "k": key, "r": 1}
         print("ok", sec["f"], timing[sec["f"]]["d"])
     json.dump(timing, open("tts/timing.json", "w"), ensure_ascii=False)
     if EL_LESSONS or EL_SECTIONS: print("ElevenLabs characters used this run:", EL_STATE["used"])
