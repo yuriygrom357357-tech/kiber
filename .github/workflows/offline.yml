@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["index.html", "src/pkg/**", ".github/workflows/offline.yml"]
+    paths: ["index.html", "audio/**", "src/pkg/**", ".github/workflows/offline.yml"]
 concurrency: {group: offline, cancel-in-progress: true}
 permissions: {contents: write}
 jobs:

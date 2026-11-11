@@ -1,7 +1,7 @@
 {
  "voice_id": "11JUpgNlQsWfppULB2T8",
  "voice_name": "Taras Vovk - Tactical Game NPC",
- "model": "auto-v4",
+ "model": "eleven_multilingual_v2",
  "stability": 0.5,
  "similarity": 0.75,
  "reserve": 2500,
