@@ -161,6 +161,7 @@ h1,h2,h3{font-family:var(--f-head)}
 .exam div{flex:1;min-width:220px}
 .exam b{font-family:var(--f-head);font-size:22px;font-weight:700;text-transform:uppercase;display:block}
 .exam span{color:var(--muted);font-size:15px}
+.foot .credits{display:flex;flex-direction:column;gap:3px}.foot .credits b{color:var(--ink);font-weight:600}
 .foot{margin:36px 0 40px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
 
 /* topic */
@@ -488,6 +489,8 @@ h1,h2,h3{font-family:var(--f-head)}
 const DATA = /*DATA*/null;
 const TIMING = /*TIMING*/null;
 const DEV = "Розробник: Юрій Мельничук (позивний «Композитор»)";
+const ANALYST = "Фаховий аналітик ресурсу: Ярослав Дудко (позивний «Ярий»)";
+const INIT = "Ініціатор і за підтримки: 158 навчальний центр";
 const PASS = 80; // тема засвоєна від 80%
 
 /* ---------- storage ---------- */
@@ -615,7 +618,7 @@ function renderHome(){
     <button class="row fx tool" data-go="#aar"><span class="num">${icon("aar")}</span><span class="t"><b>Тренажер АПД</b><span>Сценарій оборони позиції: проведіть аналіз за чотирма запитаннями і порівняйте з еталоном.</span></span><span class="go">›</span></button>
   </div>
   <div class="exam"><div><b>Підсумковий тест</b><span>${Math.min(30,maxPts)} випадкових питань з усіх відкритих занять. Як теоретична частина іспиту: 90% — відмінно, 80% — добре, 70% — задовільно.</span></div><button class="btn fx p" data-go="#exam">Скласти тест</button></div>
-  <footer class="foot"><span>158 навчальний центр · ${DEV} · TO BE PRODUCTION</span><span>За Програмою «Курс інструктора базового рівня», ТП 7-418.78, 2025</span></footer></div>`;
+  <footer class="foot"><div class="credits"><b>${INIT}</b><span>${DEV}</span><span>${ANALYST}</span></div><span>За Програмою «Курс інструктора базового рівня», ТП 7-418.78, 2025</span></footer></div>`;
   $("#view").innerHTML=html;bindGo();renderOff();
   document.querySelectorAll(".cmap a").forEach(a=>a.onclick=e=>{e.preventDefault();const n=+a.dataset.blk;const el=n===1?document.querySelector(".blockh"):document.getElementById("blk"+n);if(el)el.scrollIntoView({behavior:"smooth"})});
 }

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Пілотні заняття «Кібер». Джерела: Програма ТП 7-418.78 (2025), ДМ до СТІ 132Г.42К(Н),
+# Заняття «КІБР». Джерела: Програма ТП 7-418.78 (2025), ДМ до СТІ 132Г.42К(Н),
 # плани-конспекти, презентації та тести з «БІБЛІОТЕКА ІНСТРУКТОРА КІБР».
 
 L = []
@@ -313,3 +313,12 @@ for B in COURSE:
             it[2] = it[0].translate(_tr)
 _order = [it[2] for B in COURSE for m in B["mods"] for it in m["items"]]
 L.sort(key=lambda t: _order.index(t["id"]) if t["id"] in _order else 999)
+
+# Поглиблені тести (ситуаційні, розрахункові, «знайди помилку») — src/hard/<id>.py
+import importlib.util as _ilu, os as _os
+_hd = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "hard")
+for _t in L:
+    _p = _os.path.join(_hd, _t["id"] + ".py")
+    if _os.path.exists(_p):
+        _sp = _ilu.spec_from_file_location("hard_" + _t["id"], _p); _m = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_m)
+        _t["test"] = _m.T
