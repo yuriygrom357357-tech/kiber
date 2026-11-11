@@ -4,6 +4,18 @@
  "model": "eleven_multilingual_v2",
  "stability": 0.5,
  "similarity": 0.75,
- "reserve": 2500,
- "lessons": ["b1m1t1z1", "b1m1t1z2", "b1m1t2z1", "b1m1t2z2", "b1m2t1z1", "b1m2t1z2", "b1m2t2z1"]
+ "reserve": 300,
+ "lessons": [
+  "b1m1t1z1",
+  "b1m1t1z2",
+  "b1m1t2z1",
+  "b1m1t2z2",
+  "b1m2t1z1",
+  "b1m2t1z2",
+  "b1m2t2z1"
+ ],
+ "sections": [
+  "b1m2t2z2_01.mp3",
+  "b1m2t2z2_04.mp3"
+ ]
 }

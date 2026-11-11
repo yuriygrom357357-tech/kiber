@@ -17,6 +17,7 @@ if os.path.exists("tts/eleven.json"):
     EL = json.load(open("tts/eleven.json"))
 EL_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
 EL_LESSONS = set(EL.get("lessons", [])) if EL_KEY else set()
+EL_SECTIONS = set(EL.get("sections", [])) if EL_KEY else set()
 os.makedirs("tts/eleven", exist_ok=True)
 class NoBudget(Exception): pass
 
@@ -93,7 +94,7 @@ async def main():
         except Exception: old = {}
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(GAP), "-ar", "24000", "-ac", "1", "tts/cache/gap.wav"], check=True)
     for sec in job["sections"]:
-        use_el = sec["f"].split("_")[0] in EL_LESSONS
+        use_el = sec["f"].split("_")[0] in EL_LESSONS or sec["f"] in EL_SECTIONS
         vtag = ("EL:" + EL["voice_id"]) if use_el else (VOICE + RATE)
         key = hashlib.md5((vtag + json.dumps(sec["blocks"], ensure_ascii=False)).encode()).hexdigest()[:12]
         if old.get(sec["f"], {}).get("k") == key and os.path.exists("audio/" + sec["f"]):
@@ -131,7 +132,7 @@ async def main():
         timing[sec["f"]] = {"d": round(dur("audio/" + sec["f"]), 1), "m": marks, "k": key}
         print("ok", sec["f"], timing[sec["f"]]["d"])
     json.dump(timing, open("tts/timing.json", "w"), ensure_ascii=False)
-    if EL_LESSONS: print("ElevenLabs characters used this run:", EL_STATE["used"])
+    if EL_LESSONS or EL_SECTIONS: print("ElevenLabs characters used this run:", EL_STATE["used"])
     # короткі кліпи для тестів (питання, варіанти, пояснення)
     clips = job.get("clips", [])
     os.makedirs("audio/q", exist_ok=True)

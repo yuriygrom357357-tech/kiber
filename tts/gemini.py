@@ -16,6 +16,14 @@ REQ = {"n": 0}
 class Limit(Exception): pass
 
 MODELS = G.get("models") or [G["model"]]
+try:
+    _ml = json.loads(urllib.request.urlopen(urllib.request.Request("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", headers={"x-goog-api-key": KEY}), timeout=60).read())
+    for m in _ml.get("models", []):
+        n = m["name"].split("/")[-1]
+        if "tts" in n and n not in MODELS: MODELS.append(n)
+except Exception as e:
+    print("models list failed", e)
+print("Gemini моделі:", MODELS)
 MI = {"i": 0}
 def tts(text, voice):
     while True:
@@ -104,11 +112,11 @@ if "--samples" in sys.argv:
 
 # ---------- Лекції: розділи, які не озвучує ElevenLabs ----------
 EL = json.load(open("tts/eleven.json")) if os.path.exists("tts/eleven.json") else {}
-EL_LESSONS = set(EL.get("lessons", []))
+EL_LESSONS = set(EL.get("lessons", [])); EL_SECTIONS = set(EL.get("sections", []))
 TIM_P = "tts/timing.json"
 timing = json.load(open(TIM_P)) if os.path.exists(TIM_P) else {}
 def bhash(blocks): return hashlib.md5(json.dumps(blocks, ensure_ascii=False).encode()).hexdigest()[:12]
-lect_todo = [s for s in job["sections"] if s["f"].split("_")[0] not in EL_LESSONS and timing.get(s["f"], {}).get("g") != bhash(s["blocks"])]
+lect_todo = [s for s in job["sections"] if s["f"].split("_")[0] not in EL_LESSONS and s["f"] not in EL_SECTIONS and timing.get(s["f"], {}).get("g") != bhash(s["blocks"])]
 print("Gemini: розділів лекцій до озвучки", len(lect_todo))
 lect_made = 0
 try:
