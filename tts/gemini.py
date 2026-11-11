@@ -123,7 +123,7 @@ try:
             pcm_to_wav(tts(prompt, VOICE), wav + ".raw.wav")
             # стиснути задовгі паузи і прибрати тишу в кінці
             subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", wav + ".raw.wav", "-af",
-                "silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=1.1:stop_threshold=-45dB", wav], check=True)
+                "silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=1.1:stop_threshold=-45dB:stop_silence=0.6", wav], check=True)
             rate = nchar / max(dur(wav), 0.1)
             if 7.0 <= rate <= 17.0: okaudio = True; break
             print("брак озвучки", sec["f"], "символів/с", round(rate, 1), "— повтор")
