@@ -22,6 +22,9 @@ def tts(text, voice):
             "generationConfig": {"responseModalities": ["AUDIO"],
                                  "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}}}
     for attempt in range(4):
+        gap = time.time() - REQ.get("t", 0)
+        if gap < 21: time.sleep(21 - gap)   # безкоштовний ліміт ~3 запити на хвилину
+        REQ["t"] = time.time()
         REQ["n"] += 1
         req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": KEY})
         try:
@@ -34,7 +37,7 @@ def tts(text, voice):
             msg = e.read()[:400].decode("utf-8", "ignore"); print("Gemini HTTP", e.code, msg)
             if e.code == 429:
                 if "PerDay" in msg or "per day" in msg.lower() or attempt >= 2: raise Limit("429")
-                time.sleep(40); continue
+                time.sleep(65); continue
             if e.code == 404 and G["model"] != "gemini-2.5-flash-preview-tts":
                 G["model"] = "gemini-2.5-flash-preview-tts"; url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % G["model"]; print("fallback model", G["model"]); continue
             if e.code in (400, 401, 403): raise Limit(str(e.code))
