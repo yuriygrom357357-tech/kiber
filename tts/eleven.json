@@ -1,0 +1,9 @@
+{
+ "voice_id": "11JUpgNlQsWfppULB2T8",
+ "voice_name": "Taras Vovk - Tactical Game NPC",
+ "model": "auto-v4",
+ "stability": 0.5,
+ "similarity": 0.75,
+ "reserve": 2500,
+ "lessons": ["b1m1t1z1", "b1m1t1z2", "b1m1t2z1", "b1m1t2z2", "b1m2t1z1", "b1m2t1z2", "b1m2t2z1"]
+}
