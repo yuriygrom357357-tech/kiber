@@ -55,7 +55,7 @@ def dur(p):
     return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p]).decode())
 
 def split_by_silence(wav, n):
-    out = subprocess.run(["ffmpeg", "-v", "info", "-i", wav, "-af", "silencedetect=n=-40dB:d=0.7", "-f", "null", "-"], capture_output=True, text=True).stderr
+    out = subprocess.run(["ffmpeg", "-v", "info", "-i", wav, "-af", "silencedetect=n=-38dB:d=0.3", "-f", "null", "-"], capture_output=True, text=True).stderr
     starts = [float(x.split("silence_start: ")[1].split()[0]) for x in out.splitlines() if "silence_start" in x]
     ends = [float(x.split("silence_end: ")[1].split()[0]) for x in out.splitlines() if "silence_end" in x]
     total = dur(wav)
@@ -76,7 +76,7 @@ def save_clip(wav, a, b, f):
 
 def batch_prompt(texts):
     lines = "\n\n".join(texts)
-    return (G["style"] + " Прочитай по черзі кожен з наведених нижче фрагментів. Між фрагментами роби паузу дві секунди. "
+    return (G["style"] + " Прочитай по черзі кожен з наведених нижче фрагментів. Після кожного фрагмента обов’язково роби довгу паузу — три секунди тиші. "
             "Нічого не додавай від себе, не читай номерів і не коментуй.\n\n" + lines)
 
 if "--samples" in sys.argv:
@@ -107,6 +107,10 @@ def do_group(grp):
         for c, (x, y) in zip(grp, cuts): save_clip(wav, x, y, c["f"])
         return
     print("batch split mismatch (%d) -> ділю навпіл" % len(grp))
+    if len(grp) >= 20:
+        os.makedirs("tts/debug", exist_ok=True); import shutil
+        shutil.copy(wav, "tts/debug/batch_%d.wav" % len(grp))
+        json.dump([c["text"] for c in grp], open("tts/debug/batch_%d.json" % len(grp), "w"), ensure_ascii=False)
     h = len(grp) // 2
     do_group(grp[:h]); do_group(grp[h:])
 try:
