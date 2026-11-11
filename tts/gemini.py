@@ -35,6 +35,8 @@ def tts(text, voice):
             if e.code == 429:
                 if "PerDay" in msg or "per day" in msg.lower() or attempt >= 2: raise Limit("429")
                 time.sleep(40); continue
+            if e.code == 404 and G["model"] != "gemini-2.5-flash-preview-tts":
+                G["model"] = "gemini-2.5-flash-preview-tts"; url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % G["model"]; print("fallback model", G["model"]); continue
             if e.code in (400, 401, 403): raise Limit(str(e.code))
         except Limit: raise
         except Exception as e:
