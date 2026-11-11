@@ -1,9 +1,9 @@
 {
  "model": "gemini-3.8-flash-tts",
- "voice": "Charon",
+ "voice": "Algenib",
  "style": "Говори українською спокійним, впевненим, рівним голосом військового інструктора. Читай чітко, без емоційних перебільшень.",
- "batch": 10,
- "max_requests": 90,
+ "batch": 40,
+ "max_requests": 4,
  "samples": [
   "Charon",
   "Orus",

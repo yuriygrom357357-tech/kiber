@@ -66,6 +66,7 @@ def split_by_silence(wav, n):
     for s, e in gaps:
         cuts.append((t0, s + 0.15)); t0 = max(e - 0.15, s)
     cuts.append((t0, total))
+    if any(b - a < 0.35 for a, b in cuts): return None
     return cuts
 
 def save_clip(wav, a, b, f):
@@ -94,29 +95,29 @@ clips = [c for c in job.get("clips", []) if done.get(c["f"]) != hashlib.md5((VOI
 print("Gemini: кліпів до озвучки", len(clips), "голос", VOICE)
 B = G.get("batch", 10)
 made = 0
+def do_group(grp):
+    wav = "tts/cache/gbatch.wav"
+    if len(grp) == 1:
+        c = grp[0]
+        pcm_to_wav(tts(G["style"] + " Прочитай: " + c["text"], VOICE), wav)
+        save_clip(wav, 0, dur(wav), c["f"]); return
+    pcm_to_wav(tts(batch_prompt([c["text"] for c in grp]), VOICE), wav)
+    cuts = split_by_silence(wav, len(grp))
+    if cuts:
+        for c, (x, y) in zip(grp, cuts): save_clip(wav, x, y, c["f"])
+        return
+    print("batch split mismatch (%d) -> ділю навпіл" % len(grp))
+    h = len(grp) // 2
+    do_group(grp[:h]); do_group(grp[h:])
 try:
     i = 0
     while i < len(clips):
         grp = clips[i:i + B]
-        wav = "tts/cache/gbatch.wav"
-        ok = False
-        if len(grp) > 1:
-            pcm_to_wav(tts(batch_prompt([c["text"] for c in grp]), VOICE), wav)
-            cuts = split_by_silence(wav, len(grp))
-            if cuts:
-                for c, (a, b) in zip(grp, cuts): save_clip(wav, a, b, c["f"])
-                ok = True
-            else:
-                print("batch split mismatch -> по одному")
-        if not ok:
-            for c in grp:
-                pcm_to_wav(tts(G["style"] + " Прочитай: " + c["text"], VOICE), wav)
-                save_clip(wav, 0, dur(wav), c["f"])
+        do_group(grp)
         for c in grp:
             done[c["f"]] = hashlib.md5((VOICE + c["text"]).encode()).hexdigest()[:10]
         made += len(grp); i += B
         json.dump(done, open(DONE_P, "w"))
-        time.sleep(7)
 except Limit as e:
     print("Gemini: зупинка (ліміт/помилка):", e)
 json.dump(done, open(DONE_P, "w"))
