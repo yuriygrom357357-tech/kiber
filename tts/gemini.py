@@ -117,7 +117,18 @@ try:
         prompt = (G.get("lecture_style", G["style"]) + " Прочитай текст лекції повністю, дослівно, нічого не пропускаючи і не додаючи. "
                   "Між абзацами роби паузу приблизно одну секунду.\n\n" + "\n\n".join(texts))
         wav = "tts/cache/glect.wav"
-        pcm_to_wav(tts(prompt, VOICE), wav)
+        nchar = sum(len(t) for t in texts)
+        okaudio = False
+        for attempt in range(2):
+            pcm_to_wav(tts(prompt, VOICE), wav + ".raw.wav")
+            # стиснути задовгі паузи і прибрати тишу в кінці
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", wav + ".raw.wav", "-af",
+                "silenceremove=start_periods=1:start_threshold=-45dB:stop_periods=-1:stop_duration=1.1:stop_threshold=-45dB", wav], check=True)
+            rate = nchar / max(dur(wav), 0.1)
+            if 7.0 <= rate <= 17.0: okaudio = True; break
+            print("брак озвучки", sec["f"], "символів/с", round(rate, 1), "— повтор")
+        if not okaudio:
+            print("пропускаю розділ (неякісна генерація)", sec["f"]); continue
         total = dur(wav)
         cuts = split_by_silence(wav, len(texts)) if len(texts) > 1 else [(0, total)]
         if cuts:
