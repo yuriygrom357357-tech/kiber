@@ -98,6 +98,9 @@ async def main():
         key = hashlib.md5((vtag + json.dumps(sec["blocks"], ensure_ascii=False)).encode()).hexdigest()[:12]
         if old.get(sec["f"], {}).get("k") == key and os.path.exists("audio/" + sec["f"]):
             timing[sec["f"]] = old[sec["f"]]; print("skip", sec["f"]); continue
+        gh = hashlib.md5(json.dumps(sec["blocks"], ensure_ascii=False).encode()).hexdigest()[:12]
+        if not use_el and old.get(sec["f"], {}).get("g") == gh and os.path.exists("audio/" + sec["f"]):
+            timing[sec["f"]] = old[sec["f"]]; print("keep gemini", sec["f"]); continue
         if use_el:
             try:
                 for bid, text in sec["blocks"]: el_block(text)

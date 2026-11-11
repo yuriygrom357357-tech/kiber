@@ -15,31 +15,42 @@ os.makedirs("tts/cache", exist_ok=True); os.makedirs("audio/q", exist_ok=True)
 REQ = {"n": 0}
 class Limit(Exception): pass
 
+MODELS = G.get("models") or [G["model"]]
+MI = {"i": 0}
 def tts(text, voice):
+    while True:
+        if MI["i"] >= len(MODELS): raise Limit("усі моделі вичерпали денний ліміт")
+        try:
+            return tts_model(text, voice, MODELS[MI["i"]])
+        except Limit as e:
+            if str(e) in ("429", "404"):
+                print("модель", MODELS[MI["i"]], "недоступна/ліміт -> наступна"); MI["i"] += 1; continue
+            raise
+
+def tts_model(text, voice, model):
     if REQ["n"] >= G.get("max_requests", 90): raise Limit("max_requests")
-    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % G["model"]
+    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model
     body = {"contents": [{"parts": [{"text": text}]}],
             "generationConfig": {"responseModalities": ["AUDIO"],
                                  "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}}}
-    for attempt in range(4):
+    for attempt in range(3):
         gap = time.time() - REQ.get("t", 0)
         if gap < 21: time.sleep(21 - gap)   # безкоштовний ліміт ~3 запити на хвилину
         REQ["t"] = time.time()
         REQ["n"] += 1
         req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": KEY})
         try:
-            with urllib.request.urlopen(req, timeout=180) as r:
+            with urllib.request.urlopen(req, timeout=300) as r:
                 d = json.loads(r.read())
             for p in d["candidates"][0]["content"]["parts"]:
                 if "inlineData" in p: return base64.b64decode(p["inlineData"]["data"])
             raise RuntimeError("no audio")
         except urllib.error.HTTPError as e:
-            msg = e.read()[:400].decode("utf-8", "ignore"); print("Gemini HTTP", e.code, msg)
+            msg = e.read()[:400].decode("utf-8", "ignore"); print("Gemini HTTP", model, e.code, msg[:300])
             if e.code == 429:
-                if "PerDay" in msg or "per day" in msg.lower() or attempt >= 2: raise Limit("429")
+                if "PerDay" in msg or "per day" in msg.lower() or "free_tier_requests" in msg or attempt >= 1: raise Limit("429")
                 time.sleep(65); continue
-            if e.code == 404 and G["model"] != "gemini-2.5-flash-preview-tts":
-                G["model"] = "gemini-2.5-flash-preview-tts"; url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % G["model"]; print("fallback model", G["model"]); continue
+            if e.code == 404: raise Limit("404")
             if e.code in (400, 401, 403): raise Limit(str(e.code))
         except Limit: raise
         except Exception as e:
@@ -91,6 +102,41 @@ if "--samples" in sys.argv:
             print("sample failed", v, e)
     sys.exit(0)
 
+# ---------- Лекції: розділи, які не озвучує ElevenLabs ----------
+EL = json.load(open("tts/eleven.json")) if os.path.exists("tts/eleven.json") else {}
+EL_LESSONS = set(EL.get("lessons", []))
+TIM_P = "tts/timing.json"
+timing = json.load(open(TIM_P)) if os.path.exists(TIM_P) else {}
+def bhash(blocks): return hashlib.md5(json.dumps(blocks, ensure_ascii=False).encode()).hexdigest()[:12]
+lect_todo = [s for s in job["sections"] if s["f"].split("_")[0] not in EL_LESSONS and timing.get(s["f"], {}).get("g") != bhash(s["blocks"])]
+print("Gemini: розділів лекцій до озвучки", len(lect_todo))
+lect_made = 0
+try:
+    for sec in lect_todo:
+        texts = [t for _, t in sec["blocks"]]
+        prompt = (G.get("lecture_style", G["style"]) + " Прочитай текст лекції повністю, дослівно, нічого не пропускаючи і не додаючи. "
+                  "Між абзацами роби паузу приблизно одну секунду.\n\n" + "\n\n".join(texts))
+        wav = "tts/cache/glect.wav"
+        pcm_to_wav(tts(prompt, VOICE), wav)
+        total = dur(wav)
+        cuts = split_by_silence(wav, len(texts)) if len(texts) > 1 else [(0, total)]
+        if cuts:
+            starts = [max(0.0, round(c[0], 2)) for c in cuts]
+        else:
+            L = [max(1, len(t)) for t in texts]; acc, starts = 0, []
+            for l in L: starts.append(round(total * acc / sum(L), 2)); acc += l
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", wav, "-ac", "1", "-ar", "24000", "-b:a", "64k", "audio/" + sec["f"]], check=True)
+        d = dur("audio/" + sec["f"])
+        timing[sec["f"]] = {"d": round(d, 1), "m": [[bid, st] for (bid, _), st in zip(sec["blocks"], starts)], "k": "g-" + bhash(sec["blocks"]), "g": bhash(sec["blocks"])}
+        json.dump(timing, open(TIM_P, "w"), ensure_ascii=False)
+        lect_made += 1; print("lecture ok", sec["f"], round(d, 1), "split" if cuts else "proportional")
+except Limit as e:
+    print("Gemini: лекції — зупинка:", e)
+    json.dump(timing, open(TIM_P, "w"), ensure_ascii=False)
+    print("Gemini: розділів озвучено", lect_made); sys.exit(0)
+print("Gemini: розділів озвучено", lect_made)
+
+# ---------- Тести ----------
 clips = [c for c in job.get("clips", []) if done.get(c["f"]) != hashlib.md5((VOICE + c["text"]).encode()).hexdigest()[:10]]
 print("Gemini: кліпів до озвучки", len(clips), "голос", VOICE)
 B = G.get("batch", 10)
